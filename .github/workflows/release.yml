@@ -203,26 +203,28 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: bun run tauri android build --apk
 
-      - name: Rename APKs
+      - name: Rename APK (arm64-v8a only)
         run: |
           echo "=== All generated APKs ==="
           find src-tauri/gen/android/app/build/outputs/apk/ -name '*.apk' -type f
           mkdir -p android-apks
+          # ONLY arm64-v8a is shipped — every other ABI is rejected
           while IFS= read -r apk; do
             filename=$(basename "$apk")
-            # Skip the actual universal APK (app-universal-universal-release.apk)
-            [[ "$filename" == *-universal-release* ]] && continue
+            [[ "$filename" == *arm64-v8a* ]] || continue
             # app-universal-arm64-v8a-release.apk → lumi-ai-android-arm64-v8a.apk
             renamed=$(echo "$filename" | sed 's/^app-universal-/lumi-ai-android-/' | sed 's/-release\././')
             cp "$apk" "android-apks/$renamed"
           done < <(find src-tauri/gen/android/app/build/outputs/apk/ -name '*.apk' -type f)
+          echo "=== Shipped APKs (must be exactly 1) ==="
           ls -lh android-apks/
+          [ "$(ls android-apks/*.apk | wc -l)" = "1" ] || { echo "ERROR: expected exactly 1 APK"; exit 1; }
 
-      - name: Upload APKs
+      - name: Upload APK (arm64-v8a only)
         uses: actions/upload-artifact@v6
         with:
-          name: lumi-ai-android
-          path: android-apks/*.apk
+          name: lumi-ai-android-arm64-v8a.apk
+          path: android-apks/lumi-ai-android-arm64-v8a.apk
 
   release:
     name: Create Release

@@ -1,6 +1,6 @@
 [package]
 name = "lumi-ai"
-version = "3.6.0"
+version = "3.6.1"
 description = "A friendly, human-like AI chatbot powered by Gemini"
 authors = ["iamlooper"]
 edition = "2021"
