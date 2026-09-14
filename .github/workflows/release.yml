@@ -18,6 +18,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Fail in seconds instead of ~15 minutes into the Rust/Gradle build when
+      # the four signing secrets are not configured on the repository.
+      - name: Verify signing secrets are configured
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          missing=()
+          [ -n "$ANDROID_KEYSTORE_BASE64" ] || missing+=("ANDROID_KEYSTORE_BASE64")
+          [ -n "$ANDROID_KEYSTORE_PASSWORD" ] || missing+=("ANDROID_KEYSTORE_PASSWORD")
+          [ -n "$ANDROID_KEY_PASSWORD" ] || missing+=("ANDROID_KEY_PASSWORD")
+          [ -n "$ANDROID_KEY_ALIAS" ] || missing+=("ANDROID_KEY_ALIAS")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing repository secret(s): ${missing[*]}"
+            echo "Configure them at https://github.com/${{ github.repository }}/settings/secrets/actions"
+            echo "The release APK cannot be signed without a keystore; aborting early."
+            exit 1
+          fi
+          echo "OK: all 4 signing secrets are present."
+
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -68,7 +90,30 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > src-tauri/gen/android/app/keystore.jks
+          set -euo pipefail
+          mkdir -p src-tauri/gen/android/app
+          # printf (not echo) so a stray trailing newline can never be decoded
+          # into the keystore file and corrupt it.
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > src-tauri/gen/android/app/keystore.jks
+          if [ ! -s src-tauri/gen/android/app/keystore.jks ]; then
+            echo "::error::Decoded keystore is empty. ANDROID_KEYSTORE_BASE64 must be base64 of a .jks file (base64 -w0 keystore.jks)."
+            exit 1
+          fi
+          echo "Decoded keystore: $(stat -c%s src-tauri/gen/android/app/keystore.jks) bytes"
+
+      # Catch a wrong format/password/alias here with a readable message instead
+      # of letting Gradle fail deep inside ':app:packageUniversalRelease'.
+      - name: Verify keystore is readable
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          keytool -list \
+            -keystore src-tauri/gen/android/app/keystore.jks \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+            -alias "$ANDROID_KEY_ALIAS"
+          echo "OK: keystore is valid and alias '$ANDROID_KEY_ALIAS' exists."
 
       - name: Build Android APK (Release)
         env:
@@ -77,28 +122,56 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: bun run tauri android build --apk
 
-      - name: Rename APK (arm64-v8a only)
+      - name: Prepare APK (arm64-v8a only)
         run: |
+          set -euo pipefail
+          apk_dir="src-tauri/gen/android/app/build/outputs/apk"
           echo "=== All generated APKs ==="
-          find src-tauri/gen/android/app/build/outputs/apk/ -name '*.apk' -type f
+          find "$apk_dir" -name '*.apk' -type f | sort
+
+          # AGP with splits.abi produces one APK per ABI (app-<abi>-release.apk)
+          # plus a fat app-universal-release.apk. Only arm64-v8a ships, so pick
+          # the arm64-v8a APK — tolerating every known naming variant. The ABI
+          # check below is the real gate.
+          src=""
+          # 1) the plain ABI split APK
+          src="$(find "$apk_dir" -name 'app-arm64-v8a-release.apk' -type f | sort | sed -n '1p')"
+          # 2) any arm64-v8a release APK that is not the fat universal one
+          if [ -z "$src" ]; then
+            src="$(find "$apk_dir" -name '*arm64-v8a*release*.apk' -type f ! -name '*universal*' | sort | sed -n '1p')"
+          fi
+          # 3) last resort: any arm64-v8a APK at all
+          if [ -z "$src" ]; then
+            src="$(find "$apk_dir" -name '*arm64-v8a*.apk' -type f | sort | sed -n '1p')"
+          fi
+
+          if [ -z "$src" ]; then
+            echo "::error::No arm64-v8a release APK was produced (see the APK list above)."
+            exit 1
+          fi
+
           mkdir -p android-apks
-          # ONLY arm64-v8a is shipped — every other ABI is rejected
-          while IFS= read -r apk; do
-            filename=$(basename "$apk")
-            [[ "$filename" == *arm64-v8a* ]] || continue
-            # app-universal-arm64-v8a-release.apk → lumi-ai-android-arm64-v8a.apk
-            renamed=$(echo "$filename" | sed 's/^app-universal-/lumi-ai-android-/' | sed 's/-release\././')
-            cp "$apk" "android-apks/$renamed"
-          done < <(find src-tauri/gen/android/app/build/outputs/apk/ -name '*.apk' -type f)
-          echo "=== Shipped APKs (must be exactly 1) ==="
+          cp "$src" android-apks/lumi-ai-android-arm64-v8a.apk
+          echo "Shipped: $src -> android-apks/lumi-ai-android-arm64-v8a.apk"
+
+          # Verify the packaged payload really targets arm64-v8a and nothing else.
+          abis="$(unzip -l android-apks/lumi-ai-android-arm64-v8a.apk \
+            | awk -F'lib/' '/lib\// {split($2,a,"/"); print a[1]}' | sort -u)"
+          echo "=== Native ABIs inside the shipped APK ==="
+          echo "$abis"
+          echo "$abis" | grep -qx 'arm64-v8a' \
+            || { echo "::error::Shipped APK has no arm64-v8a native libs."; exit 1; }
+          [ "$(echo "$abis" | wc -l)" = "1" ] \
+            || { echo "::error::Shipped APK contains more than one ABI:"; echo "$abis"; exit 1; }
+
           ls -lh android-apks/
-          [ "$(ls android-apks/*.apk | wc -l)" = "1" ] || { echo "ERROR: expected exactly 1 APK"; exit 1; }
 
       - name: Upload APK (arm64-v8a only)
         uses: actions/upload-artifact@v6
         with:
           name: lumi-ai-android-arm64-v8a.apk
           path: android-apks/lumi-ai-android-arm64-v8a.apk
+          if-no-files-found: error
 
   release:
     name: Create Release
