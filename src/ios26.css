@@ -1,0 +1,403 @@
+/* === iOS 26 Liquid Glass Design Foundation for Lumi AI === */
+/* Light-first tokens. Dark via prefers-color-scheme + .dark / [data-theme="dark"] override.
+   Legacy --md-* / --motion-* variables are preserved below as aliases (mapping, not removal)
+   so existing components keep working without TSX changes.
+   Import AFTER theme.css in App.tsx so these tokens and aliases win the cascade. */
+
+:root {
+  color-scheme: light dark;
+
+  /* === SF Font Stack (Inter fallback, no web request) === */
+  --ios-font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", system-ui, sans-serif;
+  --ios-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", system-ui, sans-serif;
+  --ios-font: var(--ios-font-text);
+  --ios-font-mono: "SF Mono", ui-monospace, "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  /* === iOS System Colors (Light) === */
+  --ios-system-blue: #0A84FF;
+  --ios-system-blue-contrast: #0051A8; /* text-on-tint in light */
+  --ios-system-blue-tint: rgba(10, 132, 255, 0.12);
+  --ios-system-green: #34C759;
+  --ios-system-indigo: #5856D6;
+  --ios-system-orange: #FF9500;
+  --ios-system-pink: #FF2D55;
+  --ios-system-purple: #AF52DE;
+  --ios-system-red: #FF3B30;
+  --ios-system-teal: #5AC8FA;
+  --ios-system-yellow: #FFCC00;
+  --ios-system-gray: #8E8E93;
+  --ios-system-gray-2: #AEAEB2;
+  --ios-system-gray-3: #C7C7CC;
+  --ios-system-gray-4: #D1D1D6;
+  --ios-system-gray-5: #E5E5EA;
+  --ios-system-gray-6: #F2F2F7;
+
+  /* === Backgrounds (Light) === */
+  --ios-system-background: #FFFFFF;
+  --ios-secondary-system-background: #F2F2F7;
+  --ios-tertiary-system-background: #FFFFFF;
+  --ios-grouped-bg: #F2F2F7;
+  --ios-secondary-grouped-bg: #FFFFFF;
+  --ios-tertiary-grouped-bg: #F2F2F7;
+
+  /* === Labels (Light) === */
+  --ios-label-primary: rgba(0, 0, 0, 0.88);
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-label-quaternary: rgba(60, 60, 67, 0.18);
+  --ios-label: var(--ios-label-primary);
+
+  /* === Separators & Fills (Light) === */
+  --ios-separator: rgba(60, 60, 67, 0.36);
+  --ios-separator-opaque: #C6C6C8;
+  --ios-separator-non-opaque: rgba(60, 60, 67, 0.12);
+  --ios-fill-primary: rgba(120, 120, 128, 0.2);
+  --ios-fill-secondary: rgba(120, 120, 128, 0.16);
+  --ios-fill-tertiary: rgba(120, 120, 128, 0.12);
+  --ios-fill-quaternary: rgba(120, 120, 128, 0.08);
+  --ios-fill: var(--ios-fill-quaternary);
+
+  /* === Materials: background tints (pair with filter vars below) === */
+  --ios-material-ultra-thin-bg: rgba(255, 255, 255, 0.5);
+  --ios-material-thin-bg: rgba(255, 255, 255, 0.6);
+  --ios-material-regular-bg: rgba(255, 255, 255, 0.72);
+  --ios-material-thick-bg: rgba(255, 255, 255, 0.85);
+  --ios-material-chrome-bg: rgba(255, 255, 255, 0.92);
+
+  /* === Materials: backdrop filters === */
+  --ios-material-ultra-thin: blur(12px) saturate(180%);
+  --ios-material-thin: blur(20px) saturate(180%);
+  --ios-material-regular: blur(30px) saturate(180%);
+  --ios-material-thick: blur(44px) saturate(180%);
+  --ios-material-chrome: blur(60px) saturate(180%);
+
+  /* === Liquid Glass (gradient + blur + 0.5px white 30% border) === */
+  --ios-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.04) 100%);
+  --ios-glass-border: 0.5px solid rgba(255, 255, 255, 0.3);
+  --ios-glass-filter: blur(30px) saturate(180%);
+  --ios-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --ios-glass: var(--ios-glass-bg); /* shorthand alias: background layer */
+
+  /* === Corner Radii === */
+  --ios-radius-10: 10px;
+  --ios-radius-12: 12px;
+  --ios-radius-14: 14px;
+  --ios-radius-20: 20px;
+  --ios-radius-full: 9999px;
+  --ios-corner-sm: var(--ios-radius-10);
+  --ios-corner-md: var(--ios-radius-12);
+  --ios-corner-lg: var(--ios-radius-14);
+  --ios-corner-xl: var(--ios-radius-20);
+  --ios-corner-full: var(--ios-radius-full);
+
+  /* === Typography: Large Title 34 Bold + Dynamic Type via clamp === */
+  --ios-large-title-size: clamp(28px, 4.5vw + 12px, 34px);
+  --ios-large-title-weight: 700;
+  --ios-large-title-line: 1.1;
+  --ios-large-title-spacing: 0.011em;
+  --ios-title-1-size: clamp(22px, 3vw + 12px, 28px);
+  --ios-title-2-size: clamp(19px, 2vw + 12px, 22px);
+  --ios-title-3-size: clamp(17px, 1.5vw + 12px, 20px);
+  --ios-headline-size: clamp(15px, 1vw + 12px, 17px);
+  --ios-body-size: clamp(14px, 0.8vw + 11px, 17px);
+  --ios-callout-size: clamp(13px, 0.6vw + 11px, 16px);
+  --ios-subheadline-size: clamp(12px, 0.5vw + 10px, 15px);
+  --ios-footnote-size: 13px;
+  --ios-caption-size: 12px;
+
+  /* === Safe Area === */
+  --ios-safe-top: env(safe-area-inset-top, 0px);
+  --ios-safe-right: env(safe-area-inset-right, 0px);
+  --ios-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ios-safe-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-top: var(--ios-safe-top);
+  --safe-area-inset-right: var(--ios-safe-right);
+  --safe-area-inset-bottom: var(--ios-safe-bottom);
+  --safe-area-inset-left: var(--ios-safe-left);
+
+  /* === Spring Motion (iOS spring approximation) === */
+  --ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ios-spring-bouncy: cubic-bezier(0.32, 1.2, 0.4, 1);
+  --ios-spring-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --ios-duration-fast: 150ms;
+  --ios-duration-medium: 300ms;
+  --ios-duration-slow: 500ms;
+
+  /* === iOS Shadows (soft, low-opacity vs MD elevation) === */
+  --ios-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ios-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --ios-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --ios-shadow-color: rgba(0, 0, 0, 0.12);
+
+  /* === Tab bar / Nav bar heights (layout helpers) === */
+  --ios-tab-bar-height: calc(49px + var(--ios-safe-bottom));
+  --ios-nav-bar-large-height: calc(96px + var(--ios-safe-top));
+  --ios-nav-bar-compact-height: calc(44px + var(--ios-safe-top));
+}
+
+/* === Dark Tokens: system + class override (same values, higher specificity wins) === */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ios-system-blue: #0A84FF;
+    --ios-system-blue-contrast: #7AB8FF;
+    --ios-system-blue-tint: rgba(10, 132, 255, 0.22);
+    --ios-system-green: #30D158;
+    --ios-system-indigo: #5E5CE6;
+    --ios-system-orange: #FF9F0A;
+    --ios-system-pink: #FF375F;
+    --ios-system-purple: #BF5AF2;
+    --ios-system-red: #FF453A;
+    --ios-system-teal: #64D2FF;
+    --ios-system-yellow: #FFD60A;
+    --ios-system-gray: #98989D;
+    --ios-system-gray-2: #636366;
+    --ios-system-gray-3: #48484A;
+    --ios-system-gray-4: #3A3A3C;
+    --ios-system-gray-5: #2C2C2E;
+    --ios-system-gray-6: #1C1C1E;
+
+    --ios-system-background: #000000;
+    --ios-secondary-system-background: #1C1C1E;
+    --ios-tertiary-system-background: #2C2C2E;
+    --ios-grouped-bg: #000000;
+    --ios-secondary-grouped-bg: #1C1C1E;
+    --ios-tertiary-grouped-bg: #2C2C2E;
+
+    --ios-label-primary: rgba(255, 255, 255, 0.92);
+    --ios-label-secondary: rgba(235, 235, 245, 0.6);
+    --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+    --ios-label-quaternary: rgba(235, 235, 245, 0.18);
+
+    --ios-separator: rgba(84, 84, 88, 0.6);
+    --ios-separator-opaque: #38383A;
+    --ios-separator-non-opaque: rgba(84, 84, 88, 0.36);
+    --ios-fill-primary: rgba(120, 120, 128, 0.36);
+    --ios-fill-secondary: rgba(120, 120, 128, 0.32);
+    --ios-fill-tertiary: rgba(120, 120, 128, 0.24);
+    --ios-fill-quaternary: rgba(120, 120, 128, 0.18);
+
+    --ios-material-ultra-thin-bg: rgba(28, 28, 30, 0.5);
+    --ios-material-thin-bg: rgba(28, 28, 30, 0.6);
+    --ios-material-regular-bg: rgba(28, 28, 30, 0.72);
+    --ios-material-thick-bg: rgba(28, 28, 30, 0.85);
+    --ios-material-chrome-bg: rgba(28, 28, 30, 0.92);
+
+    --ios-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.02) 100%);
+    --ios-glass-border: 0.5px solid rgba(255, 255, 255, 0.18);
+    --ios-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    --ios-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --ios-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+    --ios-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --ios-shadow-color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Manual override: <html class="dark"> or data-theme="dark" (beats media query by specificity).
+   NOTE: grouped-bg dark is #000000 here (Apple-correct); the #1C1C1E level lives in
+   --ios-secondary-grouped-bg. The task's "#F2F2F7 / #1C1C1E" pair maps to
+   --ios-grouped-bg (light) -> --ios-secondary-grouped-bg (dark card level). */
+:root.dark,
+:root[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+  --ios-system-blue: #0A84FF;
+  --ios-system-blue-contrast: #7AB8FF;
+  --ios-system-blue-tint: rgba(10, 132, 255, 0.22);
+  --ios-system-green: #30D158;
+  --ios-system-indigo: #5E5CE6;
+  --ios-system-orange: #FF9F0A;
+  --ios-system-pink: #FF375F;
+  --ios-system-purple: #BF5AF2;
+  --ios-system-red: #FF453A;
+  --ios-system-teal: #64D2FF;
+  --ios-system-yellow: #FFD60A;
+  --ios-system-gray: #98989D;
+  --ios-system-gray-2: #636366;
+  --ios-system-gray-3: #48484A;
+  --ios-system-gray-4: #3A3A3C;
+  --ios-system-gray-5: #2C2C2E;
+  --ios-system-gray-6: #1C1C1E;
+  --ios-system-background: #000000;
+  --ios-secondary-system-background: #1C1C1E;
+  --ios-tertiary-system-background: #2C2C2E;
+  --ios-grouped-bg: #000000;
+  --ios-secondary-grouped-bg: #1C1C1E;
+  --ios-tertiary-grouped-bg: #2C2C2E;
+  --ios-label-primary: rgba(255, 255, 255, 0.92);
+  --ios-label-secondary: rgba(235, 235, 245, 0.6);
+  --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+  --ios-label-quaternary: rgba(235, 235, 245, 0.18);
+  --ios-separator: rgba(84, 84, 88, 0.6);
+  --ios-separator-opaque: #38383A;
+  --ios-separator-non-opaque: rgba(84, 84, 88, 0.36);
+  --ios-fill-primary: rgba(120, 120, 128, 0.36);
+  --ios-fill-secondary: rgba(120, 120, 128, 0.32);
+  --ios-fill-tertiary: rgba(120, 120, 128, 0.24);
+  --ios-fill-quaternary: rgba(120, 120, 128, 0.18);
+  --ios-material-ultra-thin-bg: rgba(28, 28, 30, 0.5);
+  --ios-material-thin-bg: rgba(28, 28, 30, 0.6);
+  --ios-material-regular-bg: rgba(28, 28, 30, 0.72);
+  --ios-material-thick-bg: rgba(28, 28, 30, 0.85);
+  --ios-material-chrome-bg: rgba(28, 28, 30, 0.92);
+  --ios-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.02) 100%);
+  --ios-glass-border: 0.5px solid rgba(255, 255, 255, 0.18);
+  --ios-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --ios-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --ios-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --ios-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --ios-shadow-color: rgba(0, 0, 0, 0.45);
+}
+
+/* Manual override back to light (for toggle UIs that set .light explicitly). */
+:root.light,
+:root[data-theme="light"],
+.light {
+  color-scheme: light;
+}
+
+/* === Legacy Material aliases -> iOS (single definition; var() resolves per color-scheme) === */
+:root {
+  --md-ref-typeface-brand: var(--ios-font-display);
+  --md-ref-typeface-plain: var(--ios-font-text);
+
+  --md-sys-color-primary: var(--ios-system-blue);
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: var(--ios-system-blue-tint);
+  --md-sys-color-on-primary-container: var(--ios-system-blue-contrast);
+  --md-sys-color-secondary: var(--ios-system-gray);
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: var(--ios-fill-secondary);
+  --md-sys-color-on-secondary-container: var(--ios-label-primary);
+  --md-sys-color-tertiary: var(--ios-system-purple);
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: var(--ios-fill-tertiary);
+  --md-sys-color-on-tertiary-container: var(--ios-label-primary);
+  --md-sys-color-error: var(--ios-system-red);
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: var(--ios-fill-secondary);
+  --md-sys-color-on-error-container: var(--ios-system-red);
+
+  --md-sys-color-background: var(--ios-system-background);
+  --md-sys-color-on-background: var(--ios-label-primary);
+  --md-sys-color-surface: var(--ios-system-background);
+  --md-sys-color-on-surface: var(--ios-label-primary);
+  --md-sys-color-surface-variant: var(--ios-secondary-system-background);
+  --md-sys-color-on-surface-variant: var(--ios-label-secondary);
+  --md-sys-color-surface-container: var(--ios-secondary-grouped-bg);
+  --md-sys-color-surface-container-low: var(--ios-grouped-bg);
+  --md-sys-color-surface-container-lowest: var(--ios-system-background);
+  --md-sys-color-surface-container-high: var(--ios-tertiary-grouped-bg);
+  --md-sys-color-surface-container-highest: var(--ios-tertiary-system-background);
+  --md-sys-color-surface-bright: var(--ios-system-background);
+  --md-sys-color-surface-dim: var(--ios-grouped-bg);
+  --md-sys-color-surface-tint: var(--ios-system-blue);
+
+  --md-sys-color-outline: var(--ios-separator);
+  --md-sys-color-outline-variant: var(--ios-separator-non-opaque);
+  --md-sys-color-inverse-surface: var(--ios-label-primary);
+  --md-sys-color-inverse-on-surface: var(--ios-system-background);
+  --md-sys-color-inverse-primary: var(--ios-system-blue-contrast);
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: var(--ios-radius-10);
+  --md-sys-shape-corner-small: var(--ios-radius-12);
+  --md-sys-shape-corner-medium: var(--ios-radius-14);
+  --md-sys-shape-corner-large: var(--ios-radius-20);
+  --md-sys-shape-corner-extra-large: var(--ios-radius-20);
+  --md-sys-shape-corner-full: var(--ios-radius-full);
+
+  --md-elevation-shadow-color: var(--ios-shadow-color);
+
+  --motion-duration-short: var(--ios-duration-fast);
+  --motion-duration-medium: var(--ios-duration-medium);
+  --motion-duration-long: var(--ios-duration-slow);
+  --motion-easing-standard: var(--ios-spring);
+  --motion-easing-emphasized: var(--ios-spring);
+  --motion-easing-emphasized-decelerate: var(--ios-spring);
+  --motion-easing-emphasized-accelerate: var(--ios-spring-snappy);
+}
+
+/* === Base: apply SF stack + iOS background (wins over theme.css by import order) === */
+body {
+  font-family: var(--ios-font-text);
+  background: var(--ios-system-background);
+  color: var(--ios-label-primary);
+  padding-top: var(--ios-safe-top);
+  padding-right: var(--ios-safe-right);
+  padding-left: var(--ios-safe-left);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--ios-font-text);
+}
+
+/* === Reusable Liquid Glass / Material utilities === */
+.ios-glass {
+  background: var(--ios-glass-bg);
+  -webkit-backdrop-filter: var(--ios-glass-filter);
+  backdrop-filter: var(--ios-glass-filter);
+  border: var(--ios-glass-border);
+  box-shadow: var(--ios-glass-shadow);
+}
+
+.ios-material-thin {
+  background: var(--ios-material-thin-bg);
+  -webkit-backdrop-filter: var(--ios-material-thin);
+  backdrop-filter: var(--ios-material-thin);
+}
+
+.ios-material-regular {
+  background: var(--ios-material-regular-bg);
+  -webkit-backdrop-filter: var(--ios-material-regular);
+  backdrop-filter: var(--ios-material-regular);
+}
+
+.ios-material-thick {
+  background: var(--ios-material-thick-bg);
+  -webkit-backdrop-filter: var(--ios-material-thick);
+  backdrop-filter: var(--ios-material-thick);
+}
+
+.ios-large-title {
+  font-family: var(--ios-font-display);
+  font-size: var(--ios-large-title-size);
+  font-weight: var(--ios-large-title-weight);
+  line-height: var(--ios-large-title-line);
+  letter-spacing: var(--ios-large-title-spacing);
+}
+
+.ios-headline {
+  font-size: var(--ios-headline-size);
+  font-weight: 600;
+}
+
+.ios-body {
+  font-size: var(--ios-body-size);
+  line-height: 1.5;
+}
+
+.ios-footnote {
+  font-size: var(--ios-footnote-size);
+  color: var(--ios-label-secondary);
+}
+
+/* iOS-style separator helper */
+.ios-separator {
+  background: var(--ios-separator-non-opaque);
+  height: 0.5px;
+  border: 0;
+}
+
+/* Rounded-ligature fix for SF + Inter fallback */
+.ios-display,
+.ios-large-title {
+  font-feature-settings: "ss01" off;
+  text-wrap: balance;
+}

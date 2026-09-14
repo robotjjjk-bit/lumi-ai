@@ -1,0 +1,486 @@
+/* === Lumi AI — iOS 26 Login / Onboarding + ApiKeyDialog === */
+/* Cupertino grouped bg, Liquid Glass card, Cupertino TextField + filled button. */
+
+.login-screen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+  overflow: hidden;
+  /* iOS grouped background */
+  background: #f2f2f7;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    system-ui, sans-serif;
+}
+
+/* --- Liquid Glass ambient orbs (blue / purple, blur 80px) --- */
+.ios-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.ios-orb-a {
+  width: 340px;
+  height: 340px;
+  top: -90px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.35), transparent 70%);
+}
+
+.ios-orb-b {
+  width: 380px;
+  height: 380px;
+  bottom: -120px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(191, 90, 242, 0.3), transparent 70%);
+}
+
+/* --- iOS card: radius 20, regular material, big iOS shadow --- */
+.login-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border-radius: 20px;
+  text-align: center;
+  /* iOS material regular */
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Logo: 72px squircle (18px), blue gradient --- */
+.login-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  box-shadow: 0 8px 20px rgba(10, 132, 255, 0.35);
+}
+
+.login-icon {
+  width: 38px;
+  height: 38px;
+  background-color: #fff;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: #000;
+}
+
+.login-subtitle {
+  margin: 0 0 4px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgba(60, 60, 67, 0.8);
+}
+
+.login-error {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ff3b30;
+  background: rgba(255, 59, 48, 0.12);
+}
+
+/* === API Key Form === */
+
+.api-key-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.api-key-input-wrapper {
+  width: 100%;
+}
+
+/* Cupertino TextField: radius 10, grouped fill, height 44 */
+.api-key-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  background: #f2f2f7;
+  color: #000;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  /* Hemat compositor: focus-ring box-shadow snap instant; border/bg halus. */
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.api-key-input::placeholder {
+  /* alpha 0.72 agar kontras ≥4.5:1 */
+  color: rgba(60, 60, 67, 0.72);
+}
+
+/* Cupertino TextField focus: blue border + blue focus ring (SwiftUI .focused). */
+.api-key-input:focus,
+.api-key-input:focus-visible {
+  border-color: #0a84ff;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+  outline: none;
+  caret-color: #0a84ff;
+}
+
+.api-key-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.api-key-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.login-disclaimer {
+  color: rgba(60, 60, 67, 0.75);
+  margin: 0;
+}
+
+.login-link {
+  color: #0a84ff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-link:active {
+  opacity: 0.6;
+}
+
+.api-key-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* iOS filled button: #0A84FF, white, radius 12, height 50, semibold 17 */
+.ios-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 12px;
+  background: #0a84ff;
+  color: #fff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.ios-primary-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  background: #0070e0;
+}
+
+.ios-primary-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.login-button {
+  width: 100%;
+}
+
+/* iOS activity indicator replacement */
+.ios-spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: ios-spin 0.7s linear infinite;
+}
+
+@keyframes ios-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* iOS blue text button */
+.login-text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #0a84ff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+.login-text-btn:active:not(:disabled) {
+  opacity: 0.5;
+}
+
+.login-text-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.login-text-btn-primary {
+  color: #0a84ff;
+  font-weight: 400;
+}
+
+.login-text-btn-danger {
+  color: #ff3b30;
+}
+
+/* === ApiKeyDialog — iOS sheet === */
+
+.apikey-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  animation: apikey-backdrop-in 180ms var(--motion-easing-standard);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+@keyframes apikey-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.apikey-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 380px;
+  padding: 12px 20px 20px;
+  border-radius: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: apikey-sheet-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+}
+
+/* Grabber (hidden on desktop centered sheet, shown on mobile sheet) */
+.apikey-grabber {
+  display: none;
+}
+
+.apikey-dialog-title {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: #000;
+}
+
+.apikey-dialog-subtitle {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: rgba(60, 60, 67, 0.8);
+}
+
+.apikey-dialog-error {
+  margin-bottom: 4px;
+}
+
+.apikey-dialog-remove {
+  align-self: center;
+  margin-top: 4px;
+}
+
+@keyframes apikey-sheet-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* === Responsive: bottom sheet on mobile === */
+
+@media (max-width: 599px) {
+  .login-screen { padding: 16px; }
+  .login-card { padding: 24px 20px; }
+  .login-logo { width: 64px; height: 64px; border-radius: 16px; }
+
+  .apikey-dialog-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .apikey-dialog {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    animation: apikey-slide-up 320ms var(--motion-easing-emphasized-decelerate);
+  }
+
+  .apikey-grabber {
+    display: block;
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(120, 120, 128, 0.4);
+    margin: 4px auto 8px;
+  }
+}
+
+@keyframes apikey-slide-up {
+  from {
+    opacity: 0.5;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Dark mode (iOS grouped dark) === */
+
+@media (prefers-color-scheme: dark) {
+  .login-screen {
+    background: #000;
+  }
+
+  .ios-orb-a {
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.28), transparent 70%);
+  }
+
+  .ios-orb-b {
+    background: radial-gradient(circle, rgba(191, 90, 242, 0.22), transparent 70%);
+  }
+
+  .login-card,
+  .apikey-dialog {
+    background: rgba(28, 28, 30, 0.78);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .login-title,
+  .apikey-dialog-title {
+    color: #fff;
+  }
+
+  .login-subtitle,
+  .apikey-dialog-subtitle {
+    color: rgba(235, 235, 245, 0.75);
+  }
+
+  .login-disclaimer {
+    color: rgba(235, 235, 245, 0.75);
+  }
+
+  .api-key-input {
+    background: #1c1c1e;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+
+  .api-key-input::placeholder {
+    color: rgba(235, 235, 245, 0.6);
+  }
+
+  .api-key-input:focus,
+  .api-key-input:focus-visible {
+    border-color: #0a84ff;
+    background: #2c2c2e;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+    outline: none;
+    caret-color: #0a84ff;
+  }
+
+  .login-error {
+    color: #ff6961;
+    background: rgba(255, 69, 58, 0.15);
+  }
+
+  .apikey-grabber {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .apikey-dialog,
+  .apikey-dialog-backdrop,
+  .ios-primary-btn {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* === A11y safety net (subagent 5/5): ios-spin belum tercakup blok existing.
+   Spinner login jadi statis (ring penuh, tanpa rotasi) saat reduce-motion. === */
+@media (prefers-reduced-motion: reduce) {
+  .ios-spinner {
+    animation: none !important;
+    border-top-color: rgba(255, 255, 255, 0.35);
+    opacity: 0.8;
+  }
+}

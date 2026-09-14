@@ -1,0 +1,916 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 100%;
+  /* iOS Settings grouped background */
+  background: #F2F2F7;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar {
+    background: #1C1C1E;
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--md-sys-color-on-surface);
+}
+
+.brand-icon {
+  width: 28px;
+  height: 28px;
+  background-color: var(--md-sys-color-primary);
+  flex-shrink: 0;
+}
+
+/* === Search — iOS search bar === */
+
+.sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 12px 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #E3E3E8;
+  /* navigationBarDrawer equivalent: tetap di atas list */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-search {
+    background: #2C2C2E;
+  }
+}
+
+.search-icon {
+  --md-icon-size: 18px;
+  color: #8E8E93;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-icon {
+    color: #98989D;
+  }
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 17px;
+  min-width: 0;
+}
+
+/* Sembunyikan native cancel agar hanya clear button kustom yang tampil */
+.search-input[type="search"]::-webkit-search-cancel-button,
+.search-input[type="search"]::-webkit-search-decoration {
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search-input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-input::placeholder {
+  color: #8E8E93;
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-input::placeholder {
+    color: #98989D;
+  }
+}
+
+.search-clear {
+  --md-icon-button-icon-size: 16px;
+  --md-icon-button-state-layer-height: 28px;
+  --md-icon-button-state-layer-width: 28px;
+}
+
+/* === Search Scopes — iOS segmented (searchScopes) === */
+
+.sidebar-scopes {
+  display: flex;
+  gap: 2px;
+  margin: 0 12px 8px;
+  padding: 2px;
+  border-radius: 9px;
+  background: #E3E3E8;
+  /* ikut sticky bersama search bar */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-scopes {
+    background: #2C2C2E;
+  }
+}
+
+.sidebar-scope-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  padding: 6px 4px;
+  min-height: 28px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--md-sys-color-on-surface-variant);
+  /* Hemat compositor: box-shadow (repaint) snap instant; background/color halus. */
+  /* Subagent 4/5 (press): tambah transform agar scale global theme.css beranimasi. */
+  transition: background 150ms ease, color 150ms ease,
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.sidebar-scope-btn[aria-selected="true"] {
+  background: #FFFFFF;
+  color: var(--md-sys-color-on-surface);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-scope-btn[aria-selected="true"] {
+    background: #636366;
+    color: #FFFFFF;
+  }
+}
+
+/* === Section Label — iOS footnote === */
+
+.sidebar-section-label {
+  padding: 12px 20px 6px;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-section-label {
+    color: #98989D;
+  }
+}
+
+/* === Conversations === */
+
+.sidebar-conversations {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px;
+  /* Padanan iOS 26 scrollEdgeEffectStyle(.soft, top): fade 16px top, paint-only, scroll tetap jalan */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 16px);
+  mask-image: linear-gradient(to bottom, transparent 0, black 16px);
+}
+
+.sidebar-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.conv-item-wrapper {
+  position: relative;
+  margin-bottom: 2px;
+}
+
+/* Hairline 0.5px antar cell ala listRowSeparator, inset 40px (icon 18 + gap 10 + padding 12) */
+.conv-item-wrapper + .conv-item-wrapper::before {
+  content: "";
+  display: block;
+  height: 0.5px;
+  margin-left: 40px;
+  background: rgba(120, 120, 128, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  .conv-item-wrapper + .conv-item-wrapper::before {
+    background: rgba(84, 84, 88, 0.6);
+  }
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background-color var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.conversation-item:hover {
+  background: rgba(120, 120, 128, 0.16);
+}
+
+.conversation-item.active {
+  background: rgba(10, 132, 255, 0.15);
+  color: var(--md-sys-color-on-surface);
+  font-weight: 600;
+}
+
+.conv-icon {
+  --md-icon-size: 18px;
+  color: var(--md-sys-color-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.conversation-item.active .conv-icon {
+  color: #0A84FF;
+}
+
+.conv-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+/* === Conversation Menu Button === */
+
+.conv-menu-btn {
+  opacity: 0;
+  flex-shrink: 0;
+  --md-icon-button-icon-size: 16px;
+  --md-icon-button-state-layer-height: 28px;
+  --md-icon-button-state-layer-width: 28px;
+  transition: opacity var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+.conversation-item:hover .conv-menu-btn {
+  opacity: 1;
+}
+
+@media (max-width: 599px) {
+  .conv-menu-btn { opacity: 1; }
+}
+
+/* === Conversation Spinner (background streaming) === */
+
+.conv-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--md-sys-color-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: conv-spin 0.8s linear infinite;
+}
+
+@keyframes conv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Rename Input === */
+
+.conv-rename-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 14px;
+  padding: 0;
+  border-bottom: 1px solid var(--md-sys-color-primary);
+}
+
+/* === Context Menu — iOS popover (thick material, 44pt rows) === */
+
+.conv-context-menu {
+  position: absolute;
+  left: 12px;
+  top: 100%;
+  z-index: 200;
+  /* iOS thick material */
+  background: rgba(242, 242, 247, 0.82);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.18),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  min-width: 220px;
+  padding: 0;
+  overflow: hidden;
+  animation: conv-popup-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+}
+
+@media (prefers-color-scheme: dark) {
+  .conv-context-menu {
+    background: rgba(30, 30, 32, 0.82);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.55),
+      0 0 0 0.5px rgba(255, 255, 255, 0.14);
+  }
+}
+
+@keyframes conv-popup-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 7px 16px;
+  border: none;
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.22);
+  border-radius: 0;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: 17px;
+  text-align: left;
+  transition: background-color 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1)),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.context-menu-item:last-child {
+  border-bottom: none;
+}
+
+.context-menu-item:hover {
+  background: transparent;
+}
+
+.context-menu-item:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.context-menu-item md-icon {
+  --md-icon-size: 22px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.context-menu-danger {
+  color: #FF3B30;
+}
+
+.context-menu-danger md-icon {
+  color: #FF3B30;
+}
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+}
+
+/* === Archived Toggle === */
+
+.archived-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  border-radius: 10px;
+  margin-top: 4px;
+  transition: background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+  /* angka archived count tidak jitter */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.archived-toggle:hover {
+  background: rgba(120, 120, 128, 0.16);
+}
+
+.archived-toggle md-icon {
+  --md-icon-size: 18px;
+}
+
+.archived-chevron {
+  margin-left: auto;
+}
+
+/* === iOS Alert (Portal, rendered at body level) === */
+
+.confirm-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: dialog-fade-in var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+@keyframes dialog-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.confirm-dialog {
+  background: rgba(242, 242, 247, 0.82);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  width: 270px;
+  max-width: calc(100vw - 48px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.22),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  animation: dialog-scale-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+}
+
+@media (prefers-color-scheme: dark) {
+  .confirm-dialog {
+    background: rgba(30, 30, 32, 0.82);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.55),
+      0 0 0 0.5px rgba(255, 255, 255, 0.14);
+  }
+}
+
+@keyframes dialog-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* iOS alerts have no leading icon — hide Material icon, keep About logo */
+.confirm-dialog-icon {
+  display: none;
+}
+
+.confirm-dialog-icon-error {
+  display: none;
+}
+
+.confirm-dialog-title {
+  margin: 0;
+  padding: 19px 16px 5px;
+  color: var(--md-sys-color-on-surface);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.confirm-dialog-body {
+  margin: 0;
+  padding: 0 16px 19px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  gap: 0;
+  border-top: 0.5px solid rgba(60, 60, 67, 0.36);
+}
+
+.dialog-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 400;
+  color: #007AFF;
+  transition: background-color 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1)),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.dialog-btn:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.dialog-btn + .dialog-btn {
+  border-left: 0.5px solid rgba(60, 60, 67, 0.36);
+}
+
+.dialog-btn-cancel {
+  background: transparent;
+  color: #007AFF;
+  font-weight: 400;
+}
+
+.dialog-btn-cancel:hover {
+  background: transparent;
+}
+
+.dialog-btn-cancel:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.dialog-btn-danger {
+  background: transparent;
+  color: #FF3B30;
+  font-weight: 400;
+}
+
+.dialog-btn-danger:hover {
+  background: transparent;
+}
+
+.dialog-btn-danger:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.dialog-btn-confirm {
+  background: transparent;
+  color: #007AFF;
+  font-weight: 600;
+}
+
+.dialog-btn-confirm:hover {
+  background: transparent;
+}
+
+.dialog-btn-confirm:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+/* === Selection Mode === */
+
+.select-toolbar {
+  gap: 0;
+}
+
+.select-toolbar-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--md-sys-color-on-surface);
+  /* contentTransition(.numericText): "N selected" tidak jitter */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.select-toolbar-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* === Subagent 3/5: content transitions ala SwiftUI .contentTransition(.numericText) === */
+/* CSS global (.numeric-swap) didefinisikan di ChatView.css; definisi ulang di sini
+   agar Sidebar tetap benar bila stylesheet dimuat terpisah. Inner .numeric-swap
+   me-remount via <Show keyed> di TSX (mistake #6: tanpa animation tak berefek).
+   Murah: opacity + transform saja. */
+.numeric-tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.numeric-swap {
+  display: inline-block;
+  animation: numeric-swap-in 180ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity, transform;
+}
+
+@keyframes numeric-swap-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.conversation-item.selected {
+  background: rgba(10, 132, 255, 0.15);
+}
+
+.conv-select-icon {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.conversation-item.selected .conv-select-icon {
+  color: var(--md-sys-color-primary);
+}
+
+/* === Footer — iOS grouped cells === */
+
+.sidebar-footer {
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+.sidebar-footer-actions {
+  padding: 0;
+  background: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-footer-actions {
+    background: #2C2C2E;
+  }
+}
+
+.footer-action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  border-radius: 0;
+  transition: background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+/* 0.5px iOS separator between grouped rows */
+.footer-action-item + .footer-action-item {
+  border-top: 0.5px solid rgba(120, 120, 128, 0.35);
+}
+
+.footer-action-item:hover {
+  background: rgba(120, 120, 128, 0.12);
+}
+
+.footer-action-item md-icon {
+  --md-icon-size: 20px;
+  color: #0A84FF;
+}
+
+.footer-action-danger {
+  color: var(--md-sys-color-error);
+}
+
+.footer-action-danger md-icon {
+  color: var(--md-sys-color-error);
+}
+
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 10px 11px 14px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-account {
+    background: #2C2C2E;
+  }
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.account-icon {
+  --md-icon-size: 22px;
+  color: #0A84FF;
+}
+
+.account-email {
+  color: var(--md-sys-color-on-surface);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* iOS disclosure chevron */
+.account-chevron {
+  --md-icon-size: 20px;
+  color: #C7C7CC;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .account-chevron {
+    color: #48484A;
+  }
+}
+
+/* Grouped-list style: dividers handled by 0.5px cell separators */
+.sidebar-footer md-divider {
+  display: none;
+}
+
+/* === About Dialog === */
+
+.about-dialog {
+  text-align: center;
+}
+
+.about-logo-container {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dialog-fade-in var(--motion-duration-medium) var(--motion-easing-standard);
+}
+
+.about-logo {
+  width: 36px;
+  height: 36px;
+  background-color: var(--md-sys-color-on-primary-container);
+}
+
+.about-tagline {
+  margin: 0;
+  padding: 0 16px 6px;
+  font-size: 13px;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.about-version {
+  margin: 0;
+  padding: 0 16px 19px;
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+  text-align: center;
+}
+
+.about-dialog .about-logo-container {
+  margin: 19px auto 12px;
+}
+
+.about-dialog .confirm-dialog-title {
+  padding-top: 0;
+}
+
+.about-actions {
+  justify-content: stretch;
+}
+
+/* === Responsive: context menu → iOS Action Sheet bottom === */
+
+@media (max-width: 599px) {
+  .popup-backdrop {
+    background: rgba(0, 0, 0, 0.32);
+  }
+  .conv-item-wrapper {
+    position: static;
+  }
+  .conv-context-menu {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    min-width: unset;
+    max-height: min(70vh, 560px);
+    overflow-y: auto;
+    border-radius: 14px;
+    padding-top: 14px;
+    animation: ios-sheet-up var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+  }
+  .conv-context-menu::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(120, 120, 128, 0.5);
+  }
+  /* iOS Alert stays centered on mobile — only tighten width */
+  .confirm-dialog {
+    width: 270px;
+    max-width: calc(100vw - 48px);
+  }
+}
+
+@keyframes ios-sheet-up {
+  from { opacity: 0.6; transform: translateY(48px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === A11y: touch target min 44px di mobile === */
+@media (max-width: 599px) {
+  .conversation-item,
+  .footer-action-item,
+  .archived-toggle {
+    min-height: 44px;
+  }
+  .dialog-btn {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conv-context-menu,
+  .confirm-dialog,
+  .confirm-dialog-backdrop,
+  .numeric-swap {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .dialog-btn,
+  .dialog-btn-cancel,
+  .dialog-btn-confirm {
+    color: #0A84FF;
+  }
+  .dialog-btn-danger,
+  .context-menu-danger,
+  .context-menu-danger md-icon {
+    color: #FF453A;
+  }
+  .context-menu-item,
+  .confirm-dialog-actions {
+    border-color: rgba(84, 84, 88, 0.6);
+  }
+  .dialog-btn + .dialog-btn {
+    border-left-color: rgba(84, 84, 88, 0.6);
+  }
+  .confirm-dialog-actions {
+    border-top-color: rgba(84, 84, 88, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conv-context-menu,
+  .confirm-dialog,
+  .confirm-dialog-backdrop,
+  .numeric-swap {
+    animation: none;
+  }
+}
+
+/* === A11y safety net (subagent 5/5): conv-spin + dialog-fade-in pada logo About
+   belum tercakup blok existing. Spinner jadi statis saat reduce-motion. === */
+@media (prefers-reduced-motion: reduce) {
+  .conv-spinner,
+  .about-logo-container {
+    animation: none !important;
+  }
+}

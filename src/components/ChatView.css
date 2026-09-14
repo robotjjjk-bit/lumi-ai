@@ -1,0 +1,2514 @@
+.chat-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  background: var(--md-sys-color-background);
+  position: relative;
+}
+
+/* === Top Bar === */
+
+.chat-topbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 8px 4px;
+  /* Safe-area: notch / status bar */
+  padding-top: calc(8px + env(safe-area-inset-top));
+  padding-left: calc(4px + env(safe-area-inset-left));
+  padding-right: calc(8px + env(safe-area-inset-right));
+  background: var(--md-sys-color-surface);
+  flex-shrink: 0;
+  min-height: 56px;
+}
+
+.chat-topbar-title {
+  color: var(--md-sys-color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 4px;
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+/* === Welcome Layout === */
+
+.welcome-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 24px;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.welcome-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.welcome-input-group .chat-input-area {
+  padding: 0;
+}
+
+.welcome-input-group .suggestion-row {
+  padding: 0;
+}
+
+/* === Welcome Screen === */
+
+.welcome-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: welcome-in var(--motion-duration-long) var(--motion-easing-emphasized-decelerate);
+}
+
+@keyframes welcome-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px; /* default iOS (was 6px) */
+  text-align: left;
+  max-width: 640px;
+  width: 100%;
+  padding: 0 20px; /* intentional: inset greeting 20px */
+}
+
+/* iOS 26 large title ala Apple Intelligence: 34px SF bold, left-aligned, flat label */
+.welcome-greeting {
+  font-family: -apple-system, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  margin: 0;
+  background: none;
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
+  color: var(--md-sys-color-on-surface);
+}
+
+.welcome-subtitle {
+  font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 2px 0 0;
+  font-weight: 400;
+  opacity: 0.72;
+}
+
+/* === Suggestion Row (below input on welcome, desktop only) === */
+
+.suggestion-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 0 16px 24px;
+  max-width: 832px;
+  width: 100%;
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.suggestion-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* === Welcome Suggestions (inside greeting, mobile only) === */
+
+.welcome-suggestions {
+  display: none;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-top: 16px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.welcome-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS horizontal scroll cards: radius 14, grouped bg, small shadow */
+.suggestion-chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  max-width: 220px;
+  border: none;
+  border-radius: 14px;
+  background: var(--ios-grouped-bg);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.3;
+  text-align: left;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  /* Hemat compositor: filter (brightness) memicu repaint per frame — dihapus
+     dari transisi. Hover brightness tetap jalan tapi instant; shadow tetap halus. */
+  /* Subagent 4/5 (press): tambah transform+opacity murah agar scale global
+     theme.css (button:active → 0.97) beranimasi spring 150ms, bukan snap. */
+  transition: box-shadow var(--motion-duration-short) var(--motion-easing-standard),
+              opacity 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1)),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.suggestion-chip:hover {
+  filter: brightness(0.97);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.suggestion-chip:active {
+  filter: brightness(0.94);
+}
+
+.suggestion-chip md-icon {
+  --md-icon-size: 18px;
+  color: var(--ios-blue);
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .suggestion-chip {
+    border: 0.5px solid var(--ios-separator);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* === Messages Area (ScrollView + LazyVStack equivalent) === */
+
+/* Wrapper relatif untuk floating scroll-to-bottom; satu-satunya scroller vertikal.
+   Jangan taruh scroller vertikal lain (nested same-axis) di dalamnya. */
+.chat-feed-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 840px;
+  width: 100%;
+  margin: 0 auto;
+  scroll-padding-bottom: 16px;
+}
+
+/* Soft top edge fade (mask, bukan blur view tambahan) — hanya saat sudah scroll. */
+.chat-messages.is-scrolled {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 28px);
+  mask-image: linear-gradient(to bottom, transparent 0, black 28px);
+}
+
+/* Floating scroll-to-bottom ala iOS: blur material, muncul/hilang via transisi. */
+.scroll-bottom-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%) translateY(8px) scale(0.9);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid var(--ios-separator, rgba(60, 60, 67, 0.18));
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--ios-glass-bg, rgba(255, 255, 255, 0.72));
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms var(--motion-easing-standard),
+    transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1)),
+    visibility 150ms;
+  z-index: 20;
+}
+
+.scroll-bottom-btn md-icon {
+  --md-icon-size: 20px;
+  color: var(--ios-blue, #007AFF);
+}
+
+.scroll-bottom-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.scroll-bottom-btn:active {
+  transform: translateX(-50%) translateY(0) scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-bottom-btn {
+    transition: none;
+  }
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  max-width: 100%;
+  /* listRowSeparator(.hidden) equivalent: feed tanpa garis separator */
+  border: 0;
+  /* Anti layout-thrash saat streaming: row off-screen tidak di-layout per token.
+     `auto` mengingat ukuran terakhir setelah row pernah di-render;
+     80px fallback agar scrollHeight tidak collapse sebelum render. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 80px;
+}
+
+/* Animasi masuk HANYA untuk message final yang baru masuk.
+   JANGAN terapkan ke bubble streaming: transform/opacity yang jalan
+   bersamaan dengan update innerHTML per token bikin jank + antre compositor. */
+.message-enter {
+  animation: message-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+}
+
+/* Bubble streaming: tanpa enter-animation + selalu di-layout (visible)
+   agar scrollHeight/scrollTop akurat saat follow-streaming. */
+.message.is-streaming {
+  animation: none;
+  content-visibility: visible;
+}
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-model {
+  align-self: flex-start;
+}
+
+/* iOS 26 Liquid Glass avatar: 32px rounded-full gradient, bukan Material container */
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 45%, #BF5AF2 78%, #FF375F 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    0 1px 4px rgba(10, 132, 255, 0.25);
+  margin-top: 2px;
+}
+
+.avatar-icon {
+  width: 16px;
+  height: 16px;
+  background-color: #FFFFFF;
+}
+
+.message-bubble {
+  padding: 10px 14px;
+  border-radius: 20px;
+  line-height: 1.45;
+  font-size: 16px;
+  font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
+
+/* iMessage blue bubble: #0A84FF, white text, tail bottom-right 4px, max-width 75% */
+.bubble-user {
+  background: #0A84FF;
+  color: #FFFFFF;
+  border-radius: 20px;
+  border-bottom-right-radius: 4px;
+  max-width: 75%;
+  width: fit-content;
+  box-shadow: none;
+}
+
+.bubble-user .message-text,
+.bubble-user .message-text * {
+  color: #FFFFFF;
+}
+
+/* iOS grouped bubble light: #E9E9EB, tail bottom-left 4px */
+.bubble-model {
+  background: #E9E9EB;
+  color: #000000;
+  border-radius: 20px;
+  border-bottom-left-radius: 4px;
+  padding: 10px 14px;
+  max-width: 75%;
+  width: fit-content;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Liquid Glass subtle di dark mode */
+@media (prefers-color-scheme: dark) {
+  .bubble-model {
+    background: rgba(38, 38, 41, 0.72);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+  }
+  .bubble-user {
+    background: #0A84FF;
+    color: #FFFFFF;
+  }
+  .message-avatar {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.4),
+      0 2px 12px rgba(10, 132, 255, 0.4);
+  }
+}
+
+/* === Message Content Wrapper === */
+
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1;
+}
+
+.message-user .message-content-wrapper {
+  align-items: flex-end;
+}
+
+.message-model .message-content-wrapper {
+  align-items: flex-start;
+}
+
+/* === Message Actions: iOS context style === */
+
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 0;
+  opacity: 0;
+  transition: opacity var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+.message:hover .message-actions,
+.message:focus-within .message-actions {
+  opacity: 1;
+}
+
+/* Touch devices ala iOS: selalu terlihat */
+@media (hover: none) {
+  .message .message-actions {
+    opacity: 1;
+  }
+}
+
+.actions-user {
+  justify-content: flex-end;
+}
+
+.actions-model {
+  justify-content: flex-start;
+}
+
+/* Timestamp iOS caption 11px secondary label (alpha dibesarkan agar kontras ≥4.5:1) */
+.message-time {
+  font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.27;
+  font-weight: 400;
+  color: rgba(60, 60, 67, 0.72);
+  opacity: 1;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .message-time {
+    color: rgba(235, 235, 245, 0.75);
+  }
+}
+
+/* iOS context icons: tipis 15px, blue untuk user / gray untuk model */
+.action-btn {
+  --md-icon-button-icon-size: 15px;
+  --md-icon-button-state-layer-height: 28px;
+  --md-icon-button-state-layer-width: 28px;
+  --md-icon-button-icon-color: #8E8E93;
+  flex-shrink: 0;
+  font-weight: 300;
+}
+
+.actions-user .action-btn {
+  --md-icon-button-icon-color: #0A84FF;
+}
+
+.actions-model .action-btn {
+  --md-icon-button-icon-color: #8E8E93;
+}
+
+.action-btn:hover {
+  --md-icon-button-icon-color: #0A84FF;
+}
+
+/* === Thinking — iOS disclosure cell (grouped bg, chevron, radius 12) === */
+
+.message-thinking {
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--ios-grouped-bg);
+  overflow: hidden;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .message-thinking { background: var(--ios-grouped-bg-dark); }
+}
+
+.thinking-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  cursor: pointer;
+  color: var(--ios-secondary);
+  font-family: var(--ios-font-text);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  list-style: none;
+  user-select: none;
+}
+
+.thinking-label::-webkit-details-marker { display: none; }
+.thinking-label::marker { content: ""; }
+
+.thinking-label::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  color: #C7C7CC;
+  transition: transform 200ms var(--ios-spring-snappy);
+}
+
+.message-thinking[open] > .thinking-label::after {
+  transform: rotate(90deg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-label { color: var(--ios-secondary-dark); }
+  .thinking-label::after { color: #48484A; }
+}
+
+.thinking-icon {
+  --md-icon-size: 16px;
+  color: var(--ios-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-icon { color: var(--ios-secondary-dark); }
+}
+
+.thinking-content {
+  padding: 0 16px 12px;
+  color: var(--ios-secondary);
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: var(--ios-font-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-content { color: var(--ios-secondary-dark); }
+}
+
+/* === Inline Images === */
+
+.message-image-container {
+  position: relative;
+  margin: 8px 0;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-image {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  object-fit: contain;
+}
+
+.image-overlay-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 150ms var(--motion-easing-standard);
+  pointer-events: none;
+}
+
+.message-image-container:hover .image-overlay-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.message-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+  margin: 4px 0;
+}
+
+.message-file-chip md-icon {
+  --md-icon-size: 16px;
+}
+
+/* === Edit Mode Banner (inside chat-form) === */
+
+.edit-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 0 16px;
+  color: var(--md-sys-color-primary);
+}
+
+.edit-banner-icon {
+  --md-icon-size: 18px;
+  color: var(--md-sys-color-primary);
+}
+
+.edit-banner-close {
+  margin-left: auto;
+  --md-icon-button-icon-size: 16px;
+  --md-icon-button-state-layer-height: 28px;
+  --md-icon-button-state-layer-width: 28px;
+}
+
+/* === Branch Navigation === */
+
+.branch-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.branch-indicator {
+  color: var(--md-sys-color-on-surface-variant);
+  min-width: 28px;
+  text-align: center;
+  user-select: none;
+  /* contentTransition(.numericText): lebar stabil saat 1/3 → 2/3 */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* === Subagent 3/5: content transitions ala SwiftUI .contentTransition === */
+/* tabular-nums mencegah jitter lebar saat angka berubah (1/3 → 2/3, badge 1→2).
+   Inner .numeric-swap me-remount via <Show keyed> di TSX sehingga animation
+   enter jalan per perubahan nilai (mistake #6: contentTransition tanpa
+   animation = tak berefek). Murah: opacity + transform saja (compositor-only). */
+.numeric-tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.numeric-swap {
+  display: inline-block;
+  animation: numeric-swap-in 180ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity, transform;
+}
+
+@keyframes numeric-swap-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Label swap 150ms (model selector + thinking): fade opacity saja agar ganti
+   model/thinking tidak kedip kasar. Inner .label-swap me-remount via
+   <Show keyed>; tanpa ubah handler. Murah: opacity saja. */
+.label-fade-wrap {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.label-swap {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  animation: label-swap-in 150ms ease-out;
+}
+
+@keyframes label-swap-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Streaming text: SENGAJA tanpa animasi/transisi per token (keputusan workstream
+   performance — animasi per token = jank + antre compositor bersama innerHTML).
+   Guard eksplisit agar tidak ada animasi yang ikut per token. */
+.is-streaming .message-text {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* === Search Grounding — App Store small cards (radius 10, blur) === */
+
+.search-grounding {
+  margin: 8px 0;
+  border-radius: 12px;
+  background: var(--ios-grouped-bg);
+  padding: 10px 12px;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-grounding { background: var(--ios-grouped-bg-dark); }
+}
+
+.search-grounding-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ios-secondary);
+  font-family: var(--ios-font-text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-grounding-header { color: var(--ios-secondary-dark); }
+}
+
+.search-grounding-header md-icon {
+  --md-icon-size: 16px;
+  color: var(--ios-link);
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-grounding-header md-icon { color: var(--ios-link-dark); }
+}
+
+.search-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.search-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 0.5px solid var(--ios-separator);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  color: var(--ios-link);
+  font-family: var(--ios-font-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  /* Hemat compositor: hanya transform (composited); box-shadow snap instant. */
+  transition: transform 150ms var(--ios-spring-snappy);
+}
+
+.search-source-chip:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Subagent 4/5 (press): <a> tidak kena `button:active` global — scale eksplisit.
+   transform-only (composited); tidak sentuh box-shadow milik subagent 1. */
+.search-source-chip:active {
+  transform: translateY(0) scale(0.96);
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-source-chip {
+    background: rgba(44, 44, 46, 0.72);
+    color: var(--ios-link-dark);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+  .search-source-chip:hover { background: rgba(58, 58, 60, 0.85); }
+}
+
+.search-source-chip md-icon {
+  --md-icon-size: 14px;
+}
+
+/* === Function Call === */
+
+.function-call-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  margin: 4px 0;
+}
+
+.function-call-chip md-icon {
+  --md-icon-size: 16px;
+}
+
+/* === Code Execution — iOS dark card #1C1C1E / light #F2F2F7, radius 12, Xcode header === */
+
+.exec-code-block {
+  margin: 8px 0;
+  border-radius: 12px;
+  background: var(--ios-grouped-bg);
+  overflow: hidden;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .exec-code-block { background: var(--ios-grouped-bg-dark); }
+}
+
+.exec-code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--ios-secondary);
+  font-family: var(--ios-font-text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+
+.exec-code-header::before {
+  content: "";
+  width: 40px;
+  height: 12px;
+  flex-shrink: 0;
+  background-image:
+    radial-gradient(circle at 6px 6px, #FF5F57 5px, transparent 5.5px),
+    radial-gradient(circle at 21px 6px, #FEBC2E 5px, transparent 5.5px),
+    radial-gradient(circle at 36px 6px, #28C840 5px, transparent 5.5px);
+  background-repeat: no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  .exec-code-header { color: var(--ios-secondary-dark); }
+}
+
+.exec-code-header md-icon {
+  --md-icon-size: 14px;
+  color: var(--ios-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .exec-code-header md-icon { color: var(--ios-secondary-dark); }
+}
+
+.exec-code-pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: var(--ios-font-mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: inherit;
+  white-space: pre;
+}
+
+.exec-code-pre code {
+  font-family: inherit;
+}
+
+.code-exec-result {
+  margin: 8px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: none;
+  background: var(--ios-grouped-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .code-exec-result { background: var(--ios-grouped-bg-dark); }
+}
+
+.code-exec-result.result-ok {
+  border-color: transparent;
+}
+
+.code-exec-result.result-error {
+  border-color: transparent;
+}
+
+.code-exec-result-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-family: var(--ios-font-text);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ios-secondary);
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+
+@media (prefers-color-scheme: dark) {
+  .code-exec-result-header { color: var(--ios-secondary-dark); }
+}
+
+.code-exec-result.result-ok .code-exec-result-header {
+  background: color-mix(in srgb, var(--ios-green) 14%, transparent);
+  color: var(--ios-green);
+}
+
+.code-exec-result.result-error .code-exec-result-header {
+  background: color-mix(in srgb, var(--ios-red) 12%, transparent);
+  color: var(--ios-red);
+}
+
+@media (prefers-color-scheme: dark) {
+  .code-exec-result.result-error .code-exec-result-header { color: var(--ios-red-dark); }
+}
+
+.code-exec-result-header md-icon {
+  --md-icon-size: 16px;
+}
+
+.code-exec-output {
+  margin: 0;
+  padding: 12px 16px;
+  font-family: var(--ios-font-mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: inherit;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: transparent;
+}
+
+/* === Typing Indicator — 3 dots iOS gray bounce === */
+
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+  padding: 8px 0;
+  align-items: center;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8E8E93;
+  opacity: 0.4;
+  /* PhaseAnimator 3-fase: loop 1.2s dipertahankan, stagger 0/0.15/0.3s
+     (verifikasi existing), kurva spring-ish iOS; scale 0.6→1 + opacity.
+     Struktur HTML tidak diubah. Murah: transform + opacity saja. */
+  animation: typing-ios-bounce 1.2s infinite cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform, opacity;
+}
+
+@media (prefers-color-scheme: dark) {
+  .typing-indicator span { background: #98989F; }
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes typing-ios-bounce {
+  0%, 60%, 100% { transform: translateY(0) scale(0.6); opacity: 0.4; }
+  30% { transform: translateY(-4px) scale(1); opacity: 1; }
+}
+
+/* === Error — iOS red tint #FF3B30 12%, radius 12 === */
+
+.chat-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--ios-red) 12%, transparent);
+  color: var(--ios-red);
+  font-family: var(--ios-font-text);
+  font-size: 15px;
+  line-height: 1.4;
+  border-radius: 12px;
+  border: none;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .chat-error {
+    background: color-mix(in srgb, var(--ios-red-dark) 18%, transparent);
+    color: var(--ios-red-dark);
+  }
+}
+
+.error-icon {
+  --md-icon-size: 20px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* === iOS 26 Compose Tokens (Liquid Glass) === */
+
+.chat-view {
+  --ios-glass-bg: rgba(255, 255, 255, 0.72);
+  --ios-separator: rgba(60, 60, 67, 0.18);
+  --ios-tertiary-label: rgba(60, 60, 67, 0.3);
+  --ios-grouped-bg: #F2F2F7;
+  --ios-blue: #007AFF;
+  --ios-red: #FF3B30;
+  --ios-gray: #8E8E93;
+  --ios-send-stop: rgba(120, 120, 128, 0.32);
+}
+
+@media (prefers-color-scheme: dark) {
+/* === iOS 26 rich-text tokens (mirrors markdown-theme.css; markdown-it config untouched) === */
+:root {
+  --ios-font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --ios-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --ios-link: #007AFF;
+  --ios-link-dark: #0A84FF;
+  --ios-secondary: #8E8E93;
+  --ios-secondary-dark: #98989F;
+  --ios-grouped-bg: #F2F2F7;
+  --ios-grouped-bg-dark: #1C1C1E;
+  --ios-fill: rgba(120, 120, 128, 0.16);
+  --ios-fill-dark: rgba(120, 120, 128, 0.32);
+  --ios-separator: rgba(120, 120, 128, 0.3);
+  --ios-red: #FF3B30;
+  --ios-red-dark: #FF453A;
+  --ios-green: #34C759;
+}
+
+.chat-view {
+    --ios-glass-bg: rgba(28, 28, 30, 0.72);
+    --ios-separator: rgba(84, 84, 88, 0.6);
+    --ios-tertiary-label: rgba(235, 235, 245, 0.3);
+    --ios-grouped-bg: #1C1C1E;
+    --ios-blue: #0A84FF;
+    --ios-red: #FF453A;
+    --ios-gray: #98989F;
+    --ios-send-stop: rgba(120, 120, 128, 0.4);
+  }
+}
+
+/* === Input Area === */
+
+.chat-input-area {
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--md-sys-color-background);
+  width: 100%;
+  box-sizing: border-box;
+  /* safeAreaInset bottom equivalent: menempel di bawah tanpa menggeser scroller */
+  position: sticky;
+  bottom: 0;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.chat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 800px;
+  /* iOS 26 Liquid Glass pill */
+  border-radius: 24px;
+  background: var(--ios-glass-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid var(--ios-separator);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  /* Hemat compositor: box-shadow (repaint per frame) tanpa transisi — snap
+     instant saat focus; hanya background yang dihaluskan. */
+  transition: background var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+.chat-form:focus-within {
+  border-color: var(--ios-separator);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .chat-form {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--md-sys-color-surface-container);
+  }
+}
+
+.input-row {
+  display: flex;
+  align-items: flex-end;
+}
+
+.input-field-wrapper {
+  flex: 1;
+  display: flex;
+}
+
+.chat-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.35;
+  padding: 14px 16px 4px;
+  resize: none;
+  min-height: 24px;
+  max-height: 200px;
+}
+
+.chat-input::placeholder {
+  color: var(--ios-tertiary-label);
+  opacity: 1;
+}
+
+.input-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px; /* intentional: toolbar compact 32px targets; bukan 8px */
+  padding: 4px 8px 8px; /* intentional: pill dalam 8px, atas 4px rapat input */
+  min-width: 0;
+}
+
+/* iOS 26 toolbar: plain SF symbols, no boxes */
+.input-toolbar md-icon-button {
+  --md-icon-button-icon-color: var(--ios-gray);
+  --md-icon-button-state-layer-height: 32px;
+  --md-icon-button-state-layer-width: 32px;
+  --md-icon-button-icon-size: 22px;
+  --md-icon-button-hover-state-layer-color: transparent;
+  --md-icon-button-pressed-state-layer-color: transparent;
+}
+
+.input-toolbar md-icon-button:hover {
+  --md-icon-button-icon-color: var(--ios-blue);
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* === Attachment Strip — adaptive grid (LazyVGrid .adaptive equivalent) === */
+/* Grid, bukan flex manual: auto-fill minmax(72px, 80px) = adaptive columns;
+   tiap cell aspect-ratio 1/1 (pengganti GeometryReader-in-lazy: tanpa JS measure).
+   Wrap ke baris baru bila banyak (a11y lebih baik dari horizontal-scroll tersembunyi).
+   Suggestion chips SENGAJA tetap flex horizontal strip (bukan grid) — jangan grid-di-dalam-grid. */
+
+.attachment-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 80px));
+  gap: 8px;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  max-width: 800px;
+  padding: 8px;
+  overflow: visible;
+}
+
+.attachment-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.attachment-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* intentional: caption 11px rapat di bawah thumb */
+  width: 100%;
+  min-width: 0;
+  max-width: 80px;
+  padding-top: 10px; /* intentional: ruang badge remove 20px di sudut */
+  content-visibility: auto; /* hindari layout cost sel offscreen */
+}
+
+.attachment-thumb {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+  border: 0.5px solid var(--ios-separator);
+  background: var(--ios-grouped-bg);
+}
+
+.attachment-file-icon {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 0.5px solid var(--ios-separator);
+  background: var(--ios-grouped-bg);
+}
+
+.attachment-file-icon md-icon {
+  --md-icon-size: 28px;
+  color: var(--ios-gray);
+}
+
+.attachment-name {
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Status badge: SATU sudut konsisten (top-left) untuk uploading/error.
+   Remove tetap top-right — tidak tabrakan, posisi tidak pindah-pindah per state. */
+.attachment-status {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.attachment-status.is-uploading {
+  background: var(--ios-blue, #0A84FF);
+}
+
+.attachment-status.is-error {
+  background: var(--ios-red, #FF3B30);
+}
+
+.attachment-status md-icon {
+  --md-icon-size: 12px;
+  color: #FFFFFF;
+}
+
+.attachment-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #FFFFFF;
+  animation: attachment-spin 0.8s linear infinite;
+}
+
+.attachment-remove {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+  background: rgba(120, 120, 128, 0.9);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  /* Press global (button:active → scale 0.97) butuh transform di transisi;
+     hover murah: opacity saja. */
+  transition: opacity 150ms var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.attachment-remove:hover {
+  opacity: 0.85;
+}
+
+.attachment-remove md-icon {
+  --md-icon-size: 12px;
+}
+
+/* Spinner shown while a file is uploading to the Files API. */
+@keyframes attachment-spin {
+  to { transform: rotate(360deg); }
+}
+
+.attachment-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--md-sys-color-outline-variant);
+  border-top-color: var(--md-sys-color-primary);
+  border-radius: 50%;
+  animation: attachment-spin 0.8s linear infinite;
+}
+
+.attachment-error-label {
+  color: var(--md-sys-color-error);
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.2;
+  max-width: 80px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Banner shown at input-area level when an upload auto-fails and is removed. */
+.upload-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 800px;
+  padding: 8px 12px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  margin-bottom: 4px;
+}
+
+.upload-error-icon {
+  --md-icon-size: 18px;
+  flex-shrink: 0;
+}
+
+.upload-error-banner .md-typescale-label-medium {
+  flex: 1;
+}
+
+.upload-error-dismiss {
+  flex-shrink: 0;
+  color: var(--md-sys-color-on-error-container);
+}
+
+/* === iOS 26 Popover (Tools / Model / Instructions / Thinking) === */
+
+.toolbar-menu-anchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-popup {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  /* iOS thick material */
+  background: rgba(242, 242, 247, 0.82);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.18),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  min-width: 250px;
+  padding: 0;
+  overflow: hidden;
+  animation: toolbar-popup-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+}
+
+@media (prefers-color-scheme: dark) {
+  .toolbar-popup {
+    background: rgba(30, 30, 32, 0.82);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.55),
+      0 0 0 0.5px rgba(255, 255, 255, 0.14);
+  }
+}
+
+.model-popup {
+  left: auto;
+  right: 0;
+  max-width: min(280px, calc(100vw - 32px));
+}
+
+@keyframes toolbar-popup-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: transparent;
+}
+
+.popup-header {
+  padding: 12px 16px 6px;
+  color: rgba(60, 60, 67, 0.72);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+/* Form grouped iOS: every Section header is 13px secondary, single rule. */
+.toolbar-popup .form-section-header {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgba(60, 60, 67, 0.72);
+}
+
+@media (prefers-color-scheme: dark) {
+  .toolbar-popup .form-section-header {
+    color: rgba(235, 235, 245, 0.75);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .popup-header {
+    color: rgba(235, 235, 245, 0.75);
+  }
+}
+
+/* === iOS Action-Sheet Rows (44pt + 0.5px separators) === */
+
+.tool-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  min-height: 44px;
+  padding: 7px 16px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--ios-separator);
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 17px;
+  line-height: 1.3;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms var(--ios-spring-snappy),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.toolbar-popup > .tool-toggle:last-of-type,
+.toolbar-popup > :last-child .tool-toggle:last-child {
+  border-bottom: none;
+}
+
+.tool-toggle:last-child {
+  border-bottom: none;
+}
+
+.tool-toggle:hover {
+  background: transparent;
+}
+
+.tool-toggle:active {
+  background: rgba(60, 60, 67, 0.12);
+  /* <label> tidak kena `button:active` global — scale eksplisit 0.97 spring 150ms. */
+  transform: scale(0.97);
+}
+
+.tool-toggle md-icon {
+  --md-icon-size: 22px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.tool-toggle span:first-of-type {
+  flex: 1;
+  text-align: left;
+}
+
+.tool-toggle input[type="checkbox"] {
+  display: none;
+}
+
+/* === iOS Switch 51x31 === */
+
+.toggle-track {
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+  border-radius: 16px;
+  background: rgba(120, 120, 128, 0.32);
+  border: none;
+  transition: background-color 200ms var(--ios-spring-snappy);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle-track.on {
+  background: #34C759;
+  border-color: transparent;
+}
+
+.toggle-thumb {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 0 1px rgba(0, 0, 0, 0.2);
+  transition: transform 200ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transform: translateX(0);
+  will-change: transform;
+}
+
+.toggle-track.on .toggle-thumb {
+  background: #ffffff;
+  left: 2px;
+  transform: translateX(20px);
+}
+
+.tool-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--ios-red);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  border: 1.5px solid var(--ios-glass-bg);
+  box-sizing: border-box;
+  /* contentTransition(.numericText): angka badge tidak jitter */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.tools-active {
+  --md-icon-button-icon-color: var(--ios-blue);
+}
+
+/* === Model Selector (iOS plain, no outline box) === */
+
+.model-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ios-gray);
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 200px;
+  flex-shrink: 1;
+  min-width: 0;
+  transition: color var(--motion-duration-short) var(--motion-easing-standard),
+              background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.model-selector-btn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-selector-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 6%, transparent);
+  color: var(--ios-blue);
+}
+
+.model-selector-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.model-selector-btn md-icon {
+  --md-icon-size: 18px;
+}
+
+.model-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 7px 16px;
+  border: none;
+  border-bottom: 0.5px solid var(--ios-separator);
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: 17px;
+  text-align: left;
+  transition: background-color 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1)),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.model-option:last-child {
+  border-bottom: none;
+}
+
+.model-option:hover {
+  background: transparent;
+}
+
+.model-option:active {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.model-option.selected {
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-weight: 400;
+}
+
+.model-option-sub {
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.model-check {
+  --md-icon-size: 22px;
+  color: #007AFF;
+  flex-shrink: 0;
+}
+
+.send-button {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--ios-blue);
+  color: #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: background-color var(--motion-duration-short) var(--motion-easing-standard),
+              opacity var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.send-button md-icon {
+  --md-icon-size: 18px;
+  color: #FFFFFF;
+  font-variation-settings: "FILL" 1;
+  /* transform butuh box generatif pada custom element agar scale 120ms jalan. */
+  display: inline-flex;
+}
+
+.send-button:hover:not(:disabled) {
+  /* Murah: opacity composite-only; filter brightness memicu repaint. */
+  opacity: 0.88;
+}
+
+.send-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Symbol-effect ala SwiftUI (discrete, wholeSymbol): pop playful SEKALI saat
+   idle→enabled. Selector :not(:disabled) mulai cocok tepat saat tombol
+   aktif → animasi jalan 1x tanpa loop, tanpa JS/setTimeout, murni :active/transition.
+   Pakai properti `scale` (terpisah dari `transform`) agar tidak beradu dengan press. */
+.send-button:not(:disabled) {
+  animation: send-enable-pop 300ms var(--ios-spring-bouncy, cubic-bezier(0.32, 1.2, 0.4, 1)) 1;
+}
+
+@keyframes send-enable-pop {
+  0% { scale: 0.85; }
+  60% { scale: 1.08; }
+  100% { scale: 1; }
+}
+
+/* Icon swap send/stop: toggle class .is-stop me-retrigger animasi 120ms
+   (fade+scale-in) sehingga ikon tidak kedip. Check/edit (tanpa class toggle)
+   butuh key di TSX — di luar cakupan CSS-only, sengaja tidak dipaksa. */
+.send-button:not(:disabled):not(.is-stop) md-icon,
+.send-button.is-stop md-icon {
+  animation: send-icon-in 120ms ease-out 1;
+}
+
+@keyframes send-icon-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.send-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  box-shadow: none;
+}
+
+.send-button.is-stop {
+  background: var(--ios-send-stop);
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+.send-button.is-stop md-icon {
+  color: #FFFFFF;
+}
+
+/* === User Attachment Row (outside bubble, above text) — adaptive grid === */
+/* Sama seperti strip: auto-fill minmax(72px, 80px), cell 1/1, full-cell contentShape.
+   Read-only (tanpa remove) jadi tanpa badge; alt/aria-label di TSX. */
+
+.user-attach-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 80px));
+  gap: 8px;
+  justify-content: end;
+  align-items: start;
+  align-self: flex-end;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 8px;
+}
+
+.user-attach-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* intentional: caption rapat */
+  width: 100%;
+  min-width: 0;
+  max-width: 80px;
+  justify-self: end;
+  border-radius: 12px; /* contentShape: seluruh cell satu bentuk tappable */
+}
+
+.user-attach-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.user-attach-file-icon {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.user-attach-file-icon md-icon {
+  --md-icon-size: 28px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.user-attach-name {
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* === Custom Instructions Popup (iOS popover section) === */
+
+.instructions-popup {
+  min-width: min(320px, calc(100vw - 32px));
+  max-width: min(400px, calc(100vw - 32px));
+  max-height: 400px;
+  overflow-y: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.instructions-popup .popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 6px 6px 16px;
+  border-bottom: 0.5px solid var(--ios-separator);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+  z-index: 1;
+  font-size: 13px;
+}
+
+/* === Native MD3 Buttons (predictable sizing, no material-web quirks) === */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.icon-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.icon-btn md-icon {
+  --md-icon-size: 20px;
+}
+
+.icon-btn-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-btn-sm md-icon {
+  --md-icon-size: 18px;
+}
+
+/* Overlay download button on inline images. Defined after .icon-btn so source
+   order never causes transparent-background override at equal specificity. */
+.image-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 150ms var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.image-download-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.image-download-btn md-icon {
+  --md-icon-size: 18px;
+}
+
+.text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.text-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+}
+
+.tonal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.tonal-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 12%, var(--md-sys-color-secondary-container));
+}
+
+/* Modal-form validation: disabled Save is visibly inactive (works with `disabled`). */
+.tonal-btn:disabled,
+.text-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tonal-btn:disabled:hover,
+.text-btn:disabled:hover {
+  background: transparent;
+}
+
+.instruction-editor-actions .tonal-btn:disabled {
+  background: transparent;
+  opacity: 0.35;
+}
+
+
+.instruction-list {
+  padding-top: 0;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 7px 6px 7px 16px;
+  border-bottom: 0.5px solid var(--ios-separator);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms var(--ios-spring-snappy),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.instruction-item:last-child {
+  border-bottom: none;
+}
+
+.instruction-item:hover {
+  background: transparent;
+}
+
+.instruction-item:active {
+  background: rgba(60, 60, 67, 0.12);
+  /* <div> tidak kena `button:active` global — scale eksplisit 0.97 spring 150ms. */
+  transform: scale(0.97);
+}
+
+.instruction-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.instruction-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.instruction-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+}
+
+/* contentShape equivalent: whole row is tappable; buttonStyle plain (no odd bg). */
+.instruction-info-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  align-self: stretch;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.instruction-info-btn:hover {
+  background: transparent;
+}
+
+.instruction-info-btn:focus-visible {
+  outline: 2px solid var(--ios-blue, #007AFF);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.instruction-info span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.instruction-preview {
+  color: var(--md-sys-color-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.instruction-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px 12px;
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+
+.instruction-editor-name {
+  border: 0.5px solid rgba(60, 60, 67, 0.3);
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #FFFFFF;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 17px;
+  outline: none;
+  /* Hemat compositor: focus-ring box-shadow snap instant; border dihaluskan. */
+  transition: border-color var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+.instruction-editor-name:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.instruction-editor-content {
+  border: 0.5px solid rgba(60, 60, 67, 0.3);
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #FFFFFF;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  /* Hemat compositor: focus-ring box-shadow snap instant; border dihaluskan. */
+  transition: border-color var(--motion-duration-short) var(--motion-easing-standard);
+}
+
+.instruction-editor-content:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .instruction-editor-name,
+  .instruction-editor-content {
+    background: #2C2C2E;
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+  .instruction-editor-name:focus,
+  .instruction-editor-content:focus {
+    border-color: #0A84FF;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+  }
+}
+
+.instruction-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.instruction-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* === Thinking Button === */
+
+/* Thinking toggle: plain SF symbol, no box */
+.thinking-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ios-gray);
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 15px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color var(--motion-duration-short) var(--motion-easing-standard),
+              background var(--motion-duration-short) var(--motion-easing-standard),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.thinking-btn:hover {
+  color: var(--ios-blue);
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 6%, transparent);
+}
+
+.thinking-btn md-icon {
+  --md-icon-size: 18px;
+}
+
+.thinking-btn.thinking-active {
+  border: none;
+  color: var(--ios-blue);
+  background: color-mix(in srgb, var(--ios-blue) 12%, transparent);
+}
+
+.thinking-btn.thinking-active md-icon {
+  color: var(--ios-blue);
+}
+
+/* === Thinking Popup (iOS popover + segmented) === */
+
+.thinking-popup {
+  min-width: 250px;
+  max-width: min(320px, calc(100vw - 32px));
+}
+
+.thinking-levels {
+  padding: 10px 16px 14px;
+}
+
+.thinking-levels-label {
+  color: rgba(60, 60, 67, 0.6);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-levels-label {
+    color: rgba(235, 235, 245, 0.6);
+  }
+}
+
+.thinking-level-options {
+  display: flex;
+  gap: 0;
+  background: rgba(118, 118, 128, 0.18);
+  border-radius: 9px;
+  padding: 2px;
+}
+
+.thinking-level-btn {
+  flex: 1;
+  min-height: 32px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  /* Hemat compositor: ganti wildcard `all` (bisa sentuh layout) dengan
+     properti paint-only yang memang berubah (background/color). */
+  /* Subagent 4/5: tambah transform agar scale global theme.css beranimasi. */
+  transition: background-color 150ms var(--ios-spring-snappy), color 150ms var(--ios-spring-snappy),
+              transform 150ms var(--ios-spring-snappy, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.thinking-level-btn:hover {
+  background: transparent;
+}
+
+.thinking-level-btn.selected {
+  background: #ffffff;
+  color: #000000;
+  border-color: transparent;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-level-btn.selected {
+    background: #636366;
+    color: #ffffff;
+  }
+}
+
+/* === Responsive === */
+
+@media (max-width: 899px) {
+  .chat-messages { padding: 16px 12px; max-width: 100%; }
+  .chat-form { max-width: 100%; }
+  .attachment-strip { max-width: 100%; }
+  .suggestion-row { max-width: 100%; }
+}
+
+@media (max-width: 599px) {
+  .message-bubble { padding: 10px 14px; border-radius: 20px; }
+  .bubble-user { border-bottom-right-radius: 4px; max-width: 85%; }
+  .bubble-model { border-bottom-left-radius: 4px; max-width: 85%; }
+  .chat-input-area { padding: 8px 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  /* Hide desktop suggestion row on mobile */
+  .suggestion-row { display: none; }
+  /* Show suggestions inside welcome greeting on mobile */
+  .welcome-suggestions { display: flex; }
+  .suggestion-chip { padding: 10px 12px; font-size: 14px; max-width: 200px; }
+  .welcome-layout { padding: 16px 12px; }
+  .welcome-layout {
+    justify-content: flex-end;
+    gap: 0;
+  }
+  .welcome-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Avatar iOS tetap 32px di mobile (bukan 28px Material) */
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .avatar-icon {
+    width: 16px;
+    height: 16px;
+  }
+  .message { gap: 8px; }
+  /* Always show message actions on touch (no hover) */
+  .message .message-actions { opacity: 1; }
+  /* iOS pill keeps 24px radius on mobile */
+  .chat-form { border-radius: 24px; }
+  /* Compact toolbar for narrow screens (iOS plain SF, 32px touch) */
+  .input-toolbar md-icon-button {
+    --md-icon-button-state-layer-height: 32px;
+    --md-icon-button-state-layer-width: 32px;
+    --md-icon-button-icon-size: 22px;
+  }
+  .model-selector-btn { max-width: 120px; padding: 5px 8px; font-size: 12px; }
+  .thinking-btn { padding: 4px 6px; }
+  .thinking-btn .md-typescale-label-medium { display: none; }
+  .send-button {
+    width: 32px;
+    height: 32px;
+  }
+  .send-button md-icon {
+    --md-icon-size: 18px;
+  }
+  /* Popups → iOS Action Sheet bottom (slide-up + grabber) */
+  .input-toolbar { position: relative; }
+  .toolbar-menu-anchor { position: static; }
+  .popup-backdrop {
+    background: rgba(0, 0, 0, 0.32);
+  }
+  .toolbar-popup {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    top: auto;
+    min-width: unset;
+    max-width: unset;
+    max-height: min(70vh, 560px);
+    overflow-y: auto;
+    border-radius: 14px;
+    padding-top: 14px;
+    animation: ios-sheet-up var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate);
+  }
+  .toolbar-popup::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(120, 120, 128, 0.5);
+  }
+  .model-popup { left: 8px; right: 8px; }
+  .instructions-popup { min-width: unset; max-width: unset; }
+  .thinking-popup { min-width: unset; max-width: unset; }
+  /* Anchor is static, so badge absolute breaks; use relative + negative margin instead */
+  .tool-badge {
+    position: relative;
+    top: -6px;
+    right: auto;
+    margin-left: -10px;
+  }
+  /* A11y: touch target min 44px di mobile */
+  .icon-btn, .icon-btn-sm {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .model-selector-btn, .thinking-btn {
+    min-height: 44px;
+  }
+  .suggestion-chip {
+    min-height: 44px;
+  }
+  .model-option, .tool-toggle {
+    min-height: 44px;
+  }
+  /* Perbesar hit-area tombol hapus attachment tanpa mengubah visual 20px */
+  .attachment-remove {
+    position: absolute;
+  }
+  .attachment-remove::after {
+    content: "";
+    position: absolute;
+    inset: -12px;
+  }
+}
+
+/* === iOS Toast Pill (di atas keyboard / safe-area) === */
+
+@keyframes snackbar-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes snackbar-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  to { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.96); }
+}
+
+@keyframes ios-sheet-up {
+  from { opacity: 0.6; transform: translateY(48px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.snackbar {
+  position: fixed;
+  /* Overlay bottom-center ala SwiftUI .overlay(alignment: .bottom):
+     di atas input pill (~110px) + safe-area, konsisten di semua layar. */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 120px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  box-sizing: border-box;
+  background: rgba(28, 28, 30, 0.82);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  min-width: 0;
+  max-width: min(560px, calc(100vw - 32px));
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    0 0 0 0.5px rgba(255, 255, 255, 0.12);
+  animation: snackbar-in var(--motion-duration-medium) var(--motion-easing-emphasized-decelerate) forwards;
+  pointer-events: none;
+}
+
+.snackbar--exiting {
+  animation: snackbar-out 200ms var(--motion-easing-standard) forwards;
+}
+
+.snackbar-text {
+  display: block;
+}
+
+/* === iOS polish: instruction editor actions + dark-mode system colors === */
+
+.instruction-editor-actions .text-btn {
+  color: var(--ios-blue, #007AFF);
+  font-size: 17px;
+  height: 44px;
+  padding: 0 12px;
+}
+
+.instruction-editor-actions .tonal-btn {
+  background: transparent;
+  color: var(--ios-blue, #007AFF);
+  font-size: 17px;
+  font-weight: 600;
+  height: 44px;
+  padding: 0 12px;
+}
+
+.instruction-editor-actions .tonal-btn:hover {
+  background: rgba(60, 60, 67, 0.12);
+}
+
+.instruction-empty {
+  font-size: 13px;
+  padding: 19px 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .model-check {
+    color: #0A84FF;
+  }
+  .instruction-editor-actions .text-btn,
+  .instruction-editor-actions .tonal-btn {
+    color: #0A84FF;
+  }
+  .tool-toggle,
+  .model-option,
+  .instruction-item {
+    border-bottom-color: rgba(84, 84, 88, 0.6);
+  }
+  .instructions-popup .popup-header {
+    border-bottom-color: rgba(84, 84, 88, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbar-popup,
+  .snackbar {
+    animation: none;
+  }
+  .typing-indicator span,
+  .numeric-swap,
+  .label-swap {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbar-popup,
+  .snackbar,
+  .snackbar--exiting,
+  .message-enter,
+  .welcome-screen,
+  .typing-indicator span,
+  .numeric-swap,
+  .label-swap {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === A11y safety net (subagent 5/5): attachment-spin belum tercakup blok existing.
+   Spinner upload jadi statis (ring penuh, tanpa rotasi) saat reduce-motion. === */
+@media (prefers-reduced-motion: reduce) {
+  .attachment-spinner,
+  .attachment-status-dot {
+    animation: none !important;
+  }
+  .attachment-status-dot {
+    border-top-color: rgba(255, 255, 255, 0.5);
+    opacity: 0.8;
+  }
+}
+
+/* === Subagent 4/5: matikan pop enable + crossfade ikon bila reduce-motion === */
+@media (prefers-reduced-motion: reduce) {
+  .send-button:not(:disabled),
+  .send-button md-icon {
+    animation: none !important;
+  }
+}

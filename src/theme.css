@@ -1,0 +1,330 @@
+/* === Material Design 3 Expressive Theme for Lumi AI === */
+/* Expressive = larger corners, vibrant palette, playful motion, generous spacing */
+
+:root {
+  /* === Reference Typeface — iOS 26: SF first, Google Sans kept as fallback (fonts not removed, no breaking) === */
+  --sf-font-stack: -apple-system, "SF Pro Text", "SF Pro Display", Inter, system-ui;
+  --md-ref-typeface-brand: -apple-system, "SF Pro Display", "SF Pro Text", Inter, system-ui, "Google Sans", "Segoe UI", sans-serif;
+  --md-ref-typeface-plain: -apple-system, "SF Pro Text", "SF Pro Display", Inter, system-ui, "Google Sans Text", "Google Sans", "Segoe UI", sans-serif;
+
+  /* === System Color (Light) - Material Theme Builder seed #6DB0FF === */
+  --md-sys-color-primary: #39608F;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D3E4FF;
+  --md-sys-color-on-primary-container: #1D4875;
+  --md-sys-color-secondary: #545F70;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #D7E3F8;
+  --md-sys-color-on-secondary-container: #3C4858;
+  --md-sys-color-tertiary: #6C5677;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #F4D9FF;
+  --md-sys-color-on-tertiary-container: #533F5F;
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD6;
+  --md-sys-color-on-error-container: #93000A;
+  --md-sys-color-background: #F8F9FF;
+  --md-sys-color-on-background: #191C20;
+  --md-sys-color-surface: #F8F9FF;
+  --md-sys-color-on-surface: #191C20;
+  --md-sys-color-surface-variant: #DFE2EB;
+  --md-sys-color-on-surface-variant: #43474E;
+  --md-sys-color-surface-container: #ECEDF4;
+  --md-sys-color-surface-container-low: #F2F3FA;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-high: #E7E8EE;
+  --md-sys-color-surface-container-highest: #E1E2E8;
+  --md-sys-color-surface-bright: #F8F9FF;
+  --md-sys-color-surface-dim: #D8DAE0;
+  --md-sys-color-outline: #73777F;
+  --md-sys-color-outline-variant: #C3C6CF;
+  --md-sys-color-inverse-surface: #2E3035;
+  --md-sys-color-inverse-on-surface: #EFF0F7;
+  --md-sys-color-inverse-primary: #A2C9FE;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-surface-tint: #39608F;
+
+  /* === Shape (Expressive = larger radii) === */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 8px;
+  --md-sys-shape-corner-small: 12px;
+  --md-sys-shape-corner-medium: 16px;
+  --md-sys-shape-corner-large: 24px;
+  --md-sys-shape-corner-extra-large: 32px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* === Elevation shadow color === */
+  --md-elevation-shadow-color: rgba(0, 0, 0, 0.15);
+}
+
+/* === Dark Theme - Material Theme Builder seed #6DB0FF === */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-sys-color-primary: #A2C9FE;
+    --md-sys-color-on-primary: #00325B;
+    --md-sys-color-primary-container: #1D4875;
+    --md-sys-color-on-primary-container: #D3E4FF;
+    --md-sys-color-secondary: #BBC7DB;
+    --md-sys-color-on-secondary: #263141;
+    --md-sys-color-secondary-container: #3C4858;
+    --md-sys-color-on-secondary-container: #D7E3F8;
+    --md-sys-color-tertiary: #D8BDE3;
+    --md-sys-color-on-tertiary: #3C2947;
+    --md-sys-color-tertiary-container: #533F5F;
+    --md-sys-color-on-tertiary-container: #F4D9FF;
+    --md-sys-color-error: #FFB4AB;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000A;
+    --md-sys-color-on-error-container: #FFDAD6;
+    --md-sys-color-background: #111418;
+    --md-sys-color-on-background: #E1E2E8;
+    --md-sys-color-surface: #111418;
+    --md-sys-color-on-surface: #E1E2E8;
+    --md-sys-color-surface-variant: #43474E;
+    --md-sys-color-on-surface-variant: #C3C6CF;
+    --md-sys-color-surface-container: #1D2024;
+    --md-sys-color-surface-container-low: #191C20;
+    --md-sys-color-surface-container-lowest: #0B0E13;
+    --md-sys-color-surface-container-high: #272A2F;
+    --md-sys-color-surface-container-highest: #32353A;
+    --md-sys-color-surface-bright: #37393E;
+    --md-sys-color-surface-dim: #111418;
+    --md-sys-color-outline: #8D9199;
+    --md-sys-color-outline-variant: #43474E;
+    --md-sys-color-inverse-surface: #E1E2E8;
+    --md-sys-color-inverse-on-surface: #2E3035;
+    --md-sys-color-inverse-primary: #39608F;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-surface-tint: #A2C9FE;
+    --md-elevation-shadow-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* === Global Styles === */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* === Dynamic Type: fluid root size 15–17px; rem-based layout scales with iOS Text Size === */
+html {
+  font-size: clamp(15px, 0.9375rem + 0.25vw, 17px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+@supports (font: -apple-system-body) {
+  /* On iOS Safari, honor the system Text Size setting for body copy */
+  body {
+    font: -apple-system-body;
+    font-family: var(--md-ref-typeface-plain);
+  }
+}
+
+body {
+  font-family: var(--md-ref-typeface-plain);
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  overscroll-behavior: none;
+}
+
+/* === Native Desktop Feel === */
+
+body, button, input, select, textarea {
+  font-family: var(--md-ref-typeface-plain);
+}
+
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+.message-text,
+.thinking-content,
+.md-code-pre,
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+}
+
+a, button, [role="button"], md-icon-button, md-filled-button,
+md-filled-tonal-button, md-outlined-button, md-text-button,
+md-fab, md-list-item[type="button"] {
+  cursor: pointer;
+}
+
+img, a {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* === Scrollbar Styling === */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+/* === Brand Logo Mask === */
+.lumi-logo {
+  -webkit-mask-image: url('./assets/logo.svg');
+  mask-image: url('./assets/logo.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* === Expressive Animation Tokens (unified iOS spring) === */
+:root {
+  --motion-duration-short: 250ms;
+  --motion-duration-medium: 300ms;
+  --motion-duration-long: 350ms;
+  --motion-easing-ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-easing-standard: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-easing-emphasized: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-easing-emphasized-decelerate: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-easing-emphasized-accelerate: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* === iOS press feedback: subtle scale on all buttons === */
+button:active,
+.icon-btn:active,
+.text-btn:active,
+.tonal-btn:active,
+.dialog-btn:active,
+.suggestion-chip:active,
+.model-option:active,
+.model-selector-btn:active,
+.thinking-btn:active,
+.thinking-level-btn:active,
+.conversation-item:active,
+.context-menu-item:active,
+.footer-action-item:active,
+.archived-toggle:active,
+.login-text-btn:active,
+.image-download-btn:active {
+  transform: scale(0.97);
+}
+
+/* === A11y: visible keyboard focus ring (2px blue) === */
+:focus-visible {
+  outline: 2px solid #0b57d0;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :focus-visible {
+    outline-color: #a2c9fe;
+  }
+}
+
+/* === A11y: respect reduced motion — disable all animation === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================================================
+ * iOS 26 SF-icon layer (subagent 9/10) — CSS-only, no TSX renames.
+ * material-web imports stay intact (see src/lib/material-web.ts); this
+ * section only re-voices Material Symbols Rounded toward SF Symbols:
+ * thin weight (wght 500, FILL 0), optical size 24, inherited color,
+ * normal letter-spacing — sized 17–22px by the existing --md-icon-size
+ * / --md-icon-button-icon-size tokens per component context.
+ * Full Material→SF mapping (glyph names unchanged in TSX):
+ *  menu→line.3.horizontal · menu_open→sidebar.left
+ *  edit_square/edit→square.and.pencil · search→magnifyingglass · add→plus
+ *  build→wrench · tune→slider.horizontal.3 · psychology→brain/sparkles
+ *  send→arrow.up.circle.fill · stop→stop.fill · close→xmark
+ *  check/check_circle→checkmark(.circle) · delete/delete_outline/delete_sweep→trash
+ *  archive/unarchive→archivebox · push_pin/keep_off→pin · more_horiz→ellipsis
+ *  expand_less/expand_more/chevron_left/chevron_right→chevron.*
+ *  content_copy→doc.on.doc · replay/refresh→arrow.clockwise/counterclockwise
+ *  call_split→arrow.triangle.branch · download→arrow.down.to.line
+ *  settings→gearshape · info→info.circle · link→link · code/terminal/functions→curlybraces/terminal
+ *  image/videocam/audio_file/picture_as_pdf/description/attach_file→photo/video/waveform/doc/paperclip
+ *  error/error_outline→exclamationmark.(triangle/circle) · key→key.fill
+ *  travel_explore→globe · open_in_new→arrow.up.right.square
+ *  chat_bubble_outline→bubble · radio_button_unchecked→circle · checklist→checklist
+ * ===================================================================== */
+
+:root {
+  /* Default glyph size; Sidebar/ChatView contexts override via tokens */
+  --md-icon-size: 20px;
+}
+
+md-icon, .sf-icon {
+  font-family: var(--md-icon-font, 'Material Symbols Rounded');
+  font-weight: 500;
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  color: inherit;
+  letter-spacing: normal;
+  flex-shrink: 0;
+}
+
+md-icon[filled], .sf-icon[data-filled="true"] {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Filled SF-circle affordances: send/stop + destructive confirms */
+.send-button md-icon,
+.confirm-dialog-icon-error,
+.footer-action-danger md-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* iOS size band 17–22px for chrome icons (body copy sizes untouched) */
+md-icon-button md-icon, .sf-icon--chrome {
+  font-size: 22px;
+  line-height: 1;
+}
+.conv-menu-btn md-icon, .search-clear md-icon, .action-btn md-icon,
+.edit-banner-close md-icon, .attachment-remove md-icon,
+.search-source-chip md-icon {
+  font-size: 17px;
+  line-height: 1;
+}

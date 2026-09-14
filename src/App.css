@@ -1,0 +1,206 @@
+/* Suppress transitions and fast-forward animations during initial mount to
+   prevent visual flash.  We use animation-duration:0s (not animation:none)
+   so that animation-name stays unchanged.  When the preload class is removed
+   only the duration changes, which does NOT restart animations per CSS spec,
+   preventing the welcome-in / message-in slide from replaying visibly. */
+.preload *,
+.preload *::before,
+.preload *::after {
+  transition: none !important;
+  animation-duration: 0s !important;
+}
+
+.app-shell {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* === Desktop (>=900px): sidebar pushes content, collapsible via width === */
+
+.sidebar-container {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+  width: 0;
+  transition: width 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sidebar-container.open {
+  width: 300px;
+}
+
+.chat-container {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: flex 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+/* === Tablet / Mobile (<900px): sidebar overlays as modal drawer === */
+
+@media (max-width: 899px) {
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 300px;
+    transform: translateX(-100%);
+    box-shadow: none;
+    /* iOS spring drawer slide. Hemat compositor: box-shadow (repaint per frame)
+       tanpa transisi — snap instant; hanya transform yang dihaluskan. */
+    transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .sidebar-container.open {
+    transform: translateX(0);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    width: 300px;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: var(--md-sys-color-scrim);
+    opacity: 0.32;
+    animation: fade-in 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@media (max-width: 599px) {
+  .sidebar-container,
+  .sidebar-container.open {
+    width: 85vw;
+    max-width: 300px;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 0.32; }
+}
+
+/* === iOS 26: app shell — grouped bg + safe-area + iOS content width === */
+
+.app-shell {
+  background: #F2F2F7;
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-shell {
+    background: #000000;
+  }
+}
+
+/* Konten ala iOS: kolom baca terpusat, sidebar tetap di luar batas ini. */
+.app-shell .chat-container {
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+}
+
+/* === iOS 26: top navigation — frosted nav bar === */
+
+.app-shell .chat-topbar {
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  background: color-mix(in srgb, #FFFFFF 72%, transparent);
+  border-bottom: 0.5px solid color-mix(in srgb, #3C3C43 29%, transparent);
+  /* Status-bar overlay ala iOS: blur memanjang ke bawah notch. */
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-shell .chat-topbar {
+    background: color-mix(in srgb, #000000 72%, transparent);
+    border-bottom-color: color-mix(in srgb, #FFFFFF 15%, transparent);
+  }
+}
+
+/* Inline title: 17pt semibold, tracking ala SF. */
+.app-shell .chat-topbar-title {
+  font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.43px;
+  line-height: 1.29;
+}
+
+/* Large title (layar welcome): 34pt bold — dipasangkan dengan
+   .welcome-greeting milik ChatView yang sudah 34/700. */
+.app-shell .welcome-greeting {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+/* Tombol bar ala iOS: teks biru #0A84FF tanpa background pil. */
+.app-shell .chat-topbar md-icon-button {
+  color: #0A84FF;
+  background: transparent;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* === iOS 26: drawer mobile — rounded kanan + spring + backdrop blur === */
+
+@media (max-width: 899px) {
+  .app-shell .sidebar-container {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    background: color-mix(in srgb, #FFFFFF 72%, transparent);
+    /* Hemat compositor: hanya transform (composited); shadow snap instant. */
+    transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .app-shell .sidebar-backdrop {
+    background: #000000;
+    opacity: 0.32;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    animation: ios-backdrop-in 350ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@media (max-width: 899px) and (prefers-color-scheme: dark) {
+  .app-shell .sidebar-container {
+    background: color-mix(in srgb, #000000 72%, transparent);
+  }
+}
+
+@keyframes ios-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 0.32; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Diperluas subagent 5/5: .chat-container (transition flex struktural) +
+     varian .app-shell (spesifisitas lebih tinggi dari pemicu fade-in /
+     ios-backdrop-in) ikut mati. Selektor lama dipertahankan. */
+  .sidebar-container,
+  .sidebar-backdrop,
+  .chat-container,
+  .app-shell .sidebar-container,
+  .app-shell .sidebar-backdrop {
+    transition: none !important;
+    animation: none !important;
+  }
+}

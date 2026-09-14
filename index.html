@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" class="preload">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Lumi AI" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/logo.svg" />
+    <title>Lumi AI</title>
+
+    <!-- Local fonts (bundled, no external requests) -->
+    <style>
+      @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/fonts/GoogleSans-Regular.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url('/fonts/GoogleSans-Medium.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('/fonts/GoogleSans-Bold.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Google Sans Text';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/fonts/GoogleSansText-Regular.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Google Sans Text';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url('/fonts/GoogleSansText-Medium.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Google Sans Text';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('/fonts/GoogleSansText-Bold.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Material Symbols Rounded';
+        font-style: normal;
+        font-weight: 400;
+        src: url('/fonts/MaterialSymbolsRounded.ttf') format('truetype');
+      }
+      :root {
+        --md-icon-font: 'Material Symbols Rounded';
+        /* iOS 26: default glyph size; components override per-context via --md-icon-size tokens */
+        --md-icon-size: 20px;
+      }
+      html {
+        /* Dynamic Type base: fluid 15–17px, scales with viewport; iOS Text Size via -apple-system-body where supported */
+        font-size: clamp(15px, 0.9375rem + 0.25vw, 17px);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /*
+       * Material Symbols → SF Symbols visual mapping (CSS-only, no TSX renames).
+       * The Material glyph names stay in the TSX (breaking-risk if renamed);
+       * this override thins them to an SF-like weight (wght 500, FILL 0) and
+       * inherits color, so they read as iOS symbols at 17–22px contexts.
+       *
+       *  menu→line.3.horizontal · menu_open→sidebar.left · edit_square→square.and.pencil
+       *  search→magnifyingglass · add→plus · build→wrench(+magnifier for travel_explore)
+       *  tune→slider.horizontal.3 · psychology→brain/sparkles · send→arrow.up.circle.fill
+       *  stop→stop.fill · close→xmark · check/check_circle→checkmark(.circle)
+       *  delete/delete_outline/delete_sweep→trash · archive/unarchive→archivebox
+       *  push_pin/keep_off→pin · edit→square.and.pencil · content_copy→doc.on.doc
+       *  replay/refresh→arrow.clockwise/arrow.counterclockwise · chevron_*/expand_*→chevron.*
+       *  more_horiz→ellipsis · download→arrow.down.to.line · settings→gearshape
+       *  info→info.circle · link→link · code/terminal/functions→curlybraces/terminal
+       *  image/videocam/audio_file/picture_as_pdf/description/attach_file→photo/video/waveform/doc/paperclip
+       *  error/error_outline→exclamationmark.(triangle/circle) · key→key.fill
+       *  call_split→arrow.triangle.branch · checklist→checklist · open_in_new→arrow.up.right.square
+       *  chat_bubble_outline→bubble · radio_button_unchecked→circle
+       */
+      md-icon, .sf-icon {
+        font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-synthesis: none;
+        color: inherit;
+        letter-spacing: normal;
+        flex-shrink: 0;
+      }
+      md-icon[filled], .sf-icon[data-filled="true"] {
+        font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      }
+      /* Send/stop + destructive contexts render filled like SF circle.fill */
+      .send-button md-icon, .confirm-dialog-icon-error, .footer-action-danger md-icon {
+        font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <script src="/src/index.tsx" type="module"></script>
+  </body>
+</html>
