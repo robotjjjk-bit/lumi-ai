@@ -47,12 +47,40 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # android-actions/setup-android@v3 runs `sdkmanager tools`, and the legacy
+      # 'tools' package has been removed from the Android SDK repository, so the
+      # action now dies with "Failed to find package 'tools'" and takes the whole
+      # job down. The ubuntu-latest image already ships the SDK and cmdline-tools,
+      # so configure them directly instead of using the action.
+      - name: Configure Android SDK
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$sdk_root" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$sdk_root" >> "$GITHUB_ENV"
+
+          sdkmanager_bin="$(command -v sdkmanager || true)"
+          if [ -z "$sdkmanager_bin" ]; then
+            sdkmanager_bin="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          if [ ! -x "$sdkmanager_bin" ]; then
+            echo "::error::sdkmanager not found under $sdk_root/cmdline-tools"
+            ls -la "$sdk_root/cmdline-tools" || true
+            exit 1
+          fi
+          echo "$(dirname "$sdkmanager_bin")" >> "$GITHUB_PATH"
+          echo "$sdk_root/platform-tools" >> "$GITHUB_PATH"
+
+          # Pre-accept every SDK license so --install never blocks on a prompt.
+          yes | "$sdkmanager_bin" --licenses > /dev/null 2>&1 || true
+          echo "sdkmanager: $("$sdkmanager_bin" --version | tail -n 1)"
 
       - name: Install Android NDK
         run: |
+          set -euo pipefail
           sdkmanager --install "ndk;29.0.14206865"
+          test -d "$ANDROID_HOME/ndk/29.0.14206865" \
+            || { echo "::error::NDK 29.0.14206865 was not installed"; exit 1; }
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_ENV
           echo "NDK_VERSION=29.0.14206865" >> $GITHUB_ENV
 
