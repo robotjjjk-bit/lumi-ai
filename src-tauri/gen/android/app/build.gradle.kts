@@ -34,6 +34,7 @@ android {
             if (keystorePropertiesFile.exists()) {
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
                 storeFile = file(keystoreProperties["storeFile"] as String)
+                storeType = keystoreProperties.getProperty("storeType") ?: "JKS"
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
@@ -41,6 +42,10 @@ android {
             // 2. GitHub Actions (reads from secrets via environment variables)
             else if (System.getenv("ANDROID_KEYSTORE_PASSWORD") != null) {
                 storeFile = file("keystore.jks")
+                // Never rely on the JDK default: KeyStore.getDefaultType() is
+                // "pkcs12" on JDK 9+, and feeding it a JKS keystore fails with
+                // "Tag number over 30 is not supported". CI writes a JKS store.
+                storeType = System.getenv("ANDROID_KEYSTORE_TYPE") ?: "JKS"
                 storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("ANDROID_KEY_ALIAS")
                 keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
